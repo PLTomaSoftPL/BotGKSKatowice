@@ -55,7 +55,7 @@ namespace GksKatowiceBot.Controllers
                         }
                         
                     }
-                    if(items4.Count>0 && )
+                    if(items4.Count>0)
                     {
                         items3.Add(items4[0]);
                     }
