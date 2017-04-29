@@ -35,30 +35,38 @@ namespace GksKatowiceBot.Controllers
                     //    items3.Add(items[0]);
                     //}
 
-                    for(int i=0;i<items.Count;i++)
+                    if (items.Count > 0)
                     {
-                        if(i<3)
-                        {
-                            items3.Add(items[i]);
-                        }
+                        items3.Add(items[0]);
                     }
-
-                    if(items2.Count>0 && items4.Count==0)
+                    if (items2.Count > 0)
                     {
-                        if(items3.Count<3)
-                        {
-                            items3.Add(items2[0]);
-                        }
-                        else
-                        {
-                            items3[2] = items2[0];
-                        }
-                        
+                        items3.Add(items2[0]);
                     }
-                    if(items4.Count>0)
+                    if (items4.Count>0)
                     {
                         items3.Add(items4[0]);
                     }
+
+                    if (items3.Count < 3)
+                    {
+                        if (items.Count >= 2)
+                        {
+                            if (items3.Count == 2)
+                            {
+                                items3.Insert(1, items[1]);
+                            }
+                            else if(items3.Count==1)
+                            {
+                                items3.Add(items[1]);
+                            }
+                        }
+                        else if(items2.Count>=2)
+                        {
+                            items3.Add(items2[1]);
+                        }
+                    }
+
 
                     items = items3;
 
