@@ -59,6 +59,10 @@ namespace GksKatowiceBot.Controllers
                             else if(items3.Count==1)
                             {
                                 items3.Add(items[1]);
+                                if(items.Count==3)
+                                {
+                                    items3.Add(items[2]);
+                                }
                             }
                         }
                         else if(items2.Count>=2)
@@ -66,6 +70,7 @@ namespace GksKatowiceBot.Controllers
                             items3.Add(items2[1]);
                         }
                     }
+
 
 
                     items = items3;
