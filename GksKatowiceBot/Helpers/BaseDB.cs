@@ -50,7 +50,7 @@ namespace GksKatowiceBot.Helpers
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
 
-                cmd.CommandText = "addUserPLPS";
+                cmd.CommandText = "addUserGKSKatowice";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@UserName", UserName);
                 cmd.Parameters.AddWithValue("@UserId", UserId);
