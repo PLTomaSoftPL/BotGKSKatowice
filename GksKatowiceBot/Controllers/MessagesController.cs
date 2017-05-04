@@ -1885,7 +1885,7 @@ namespace GksKatowiceBot
                                 message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
                                 List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
                                 message.Text = "";
-                                message.Attachments = Helpers.BaseGETMethod.GetCardsAttachmentsExtra(ref hrefList, true, "https://www.aasapolska.pl", "Strona firmowa", "https://www.aasapolska.pl/images/front/logo.png");
+                                message.Attachments = Helpers.BaseGETMethod.GetCardsAttachmentsExtra(ref hrefList, true, "https://www.aasapolska.pl", "Aasa Polska", "https://www.aasapolska.pl/images/front/logo.png");
 
                                 await connector.Conversations.SendToConversationAsync((Activity)message);
                             }
