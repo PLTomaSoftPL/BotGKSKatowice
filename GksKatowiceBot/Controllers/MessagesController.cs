@@ -485,7 +485,7 @@ namespace GksKatowiceBot
                             await connector.Conversations.SendToConversationAsync((Activity)message);
                         }
 
-                        else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Pilka_NoznaAktualnosci")
+                        else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Pilka_NoznaAktualnosci" || activity.Text== "DEVELOPER_DEFINED_PAYLOAD_Pilka_NoznaAktualnosci")
                         {
                             Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
                             userStruct.userName = activity.From.Name;
@@ -1811,6 +1811,81 @@ namespace GksKatowiceBot
                                 List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
                                 message.Text = "";
                                 message.Attachments = Helpers.BaseGETMethod.GetCardsAttachmentsExtra(ref hrefList, true, "https://www.fuchs.com/pl/pl/", "Strona firmowa", "");
+
+                                await connector.Conversations.SendToConversationAsync((Activity)message);
+                            }
+
+                            else if (activity.Text.ToUpper().Contains("AASA"))
+                            {
+                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
+                                userStruct.userName = activity.From.Name;
+                                userStruct.userId = activity.From.Id;
+                                userStruct.botName = activity.Recipient.Name;
+                                userStruct.botId = activity.Recipient.Id;
+                                userStruct.ServiceUrl = activity.ServiceUrl;
+
+                                Parameters.Parameters.listaAdresow.Add(userStruct);
+                                ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                                var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
+                                var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
+                                connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                                var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
+                                IMessageActivity message = Activity.CreateMessageActivity();
+
+                                //     message.ChannelData = JObject.FromObject(new
+                                //     {
+                                //         notification_type = "REGULAR",
+                                //         //buttons = new dynamic[]
+                                //         // {
+                                //         //     new
+                                //         //     {
+                                //         //    type ="postback",
+                                //         //    title="Tytul",
+                                //         //    vslue = "tytul",
+                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                //         //     }
+                                //         // },
+                                //         quick_replies = new dynamic[]
+                                //     {
+                                //     //new
+                                //     //{
+                                //     //    content_type = "text",
+                                //     //    title = "Aktualności",
+                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
+                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
+                                //     //},
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Piłka nożna",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
+                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                //     },
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Siatkówka",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
+                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                //     },                                new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Hokej",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
+                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //     },
+                                //                                    }
+                                //     });
+
+
+                                message.From = botAccount;
+                                message.Recipient = userAccount;
+                                message.Conversation = new ConversationAccount(id: conversationId.Id);
+                                message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                                List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
+                                message.Text = "";
+                                message.Attachments = Helpers.BaseGETMethod.GetCardsAttachmentsExtra(ref hrefList, true, "https://www.aasapolska.pl", "Strona firmowa", "https://www.aasapolska.pl/images/front/logo.png");
 
                                 await connector.Conversations.SendToConversationAsync((Activity)message);
                             }
