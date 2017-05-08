@@ -120,6 +120,7 @@ namespace GksKatowiceBot.Controllers
                             message.Attachments = items;
                             for (int i = 0; i < dt.Rows.Count; i++)
                             {
+                                MicrosoftAppCredentials.TrustServiceUrl(dt.Rows[i]["Url"].ToString(), DateTime.MaxValue);
                                 try
                                 {
                                     var userAccount = new ChannelAccount(name: dt.Rows[i]["UserName"].ToString(), id: dt.Rows[i]["UserId"].ToString());
@@ -137,7 +138,7 @@ namespace GksKatowiceBot.Controllers
                                 catch (Exception ex)
                                 {                                    
                                     BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
-                                    BaseDB.DeleteUser(uzytkownikId);
+                                 ///   BaseDB.DeleteUser(uzytkownikId);
                                 }
                             }
                         }
