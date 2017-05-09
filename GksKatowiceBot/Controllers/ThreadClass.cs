@@ -15,7 +15,7 @@ namespace GksKatowiceBot.Controllers
         {
             try
             {
-                if (DateTime.UtcNow.Hour == 16 && (DateTime.UtcNow.Minute > 14 && DateTime.UtcNow.Minute <= 17))
+                if (DateTime.UtcNow.Hour == 16 && (DateTime.UtcNow.Minute > 0 && DateTime.UtcNow.Minute <= 3))
                 {
                     BaseDB.AddToLog("Wywołanie metody SendThreadMessage");
 
