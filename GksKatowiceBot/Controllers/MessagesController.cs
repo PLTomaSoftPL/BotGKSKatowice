@@ -77,6 +77,7 @@ namespace GksKatowiceBot
                         }
 
                         MicrosoftAppCredentials.TrustServiceUrl(@"https://facebook.botframework.com", DateTime.MaxValue);
+
                         if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Hokej" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_Hokej" || activity.Text.ToLower()=="hokej")
                         {
                             Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();

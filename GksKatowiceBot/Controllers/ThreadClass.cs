@@ -15,7 +15,7 @@ namespace GksKatowiceBot.Controllers
         {
             try
             {
-                if (DateTime.UtcNow.Hour == 16 && (DateTime.UtcNow.Minute > 0 && DateTime.UtcNow.Minute <= 3))
+                if (DateTime.UtcNow.Hour == 16 && (DateTime.UtcNow.Minute > 14 && DateTime.UtcNow.Minute <= 17))
                 {
                     BaseDB.AddToLog("Wywołanie metody SendThreadMessage");
 
@@ -120,7 +120,6 @@ namespace GksKatowiceBot.Controllers
                             message.Attachments = items;
                             for (int i = 0; i < dt.Rows.Count; i++)
                             {
-                                MicrosoftAppCredentials.TrustServiceUrl(dt.Rows[i]["Url"].ToString(), DateTime.MaxValue);
                                 try
                                 {
                                     var userAccount = new ChannelAccount(name: dt.Rows[i]["UserName"].ToString(), id: dt.Rows[i]["UserId"].ToString());

@@ -56,7 +56,7 @@ namespace GksKatowiceBot.Helpers
                 cmd.Parameters.AddWithValue("@UserId", UserId);
                 cmd.Parameters.AddWithValue("@BotName", BotName);
                 cmd.Parameters.AddWithValue("@BotId", BotId);
-                cmd.Parameters.AddWithValue("@UrlStr", Url);
+                cmd.Parameters.AddWithValue("@UrlStr", "https://facebook.botframework.com");
                 cmd.Parameters.AddWithValue("@flgTyp", flgTyp);
                 cmd.Connection = sqlConnection1;
 
