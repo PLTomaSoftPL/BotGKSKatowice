@@ -137,7 +137,7 @@ namespace GksKatowiceBot.Controllers
                                 catch (Exception ex)
                                 {                                    
                                     BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
-                                 ///   BaseDB.DeleteUser(uzytkownikId);
+                                    BaseDB.DeleteUser(uzytkownikId);
                                 }
                             }
                         }
