@@ -104,7 +104,7 @@ namespace GksKatowiceBot.Helpers
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
 
-                cmd.CommandText = "Update [dbo].[UserGKSKatowice] set flgDeleted=1 where UserId=" + UserId;
+                cmd.CommandText = "Update [dbo].[UserGKSKatowice] set flgDeleted=1 where UserId=" + UserId.ToString();
                 cmd.CommandType = CommandType.Text;
                 cmd.Connection = sqlConnection1;
 

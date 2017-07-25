@@ -11,74 +11,15 @@ namespace GksKatowiceBot.Controllers
 {
     public class ThreadClass
     {
-        public async static void SendThreadMessage()
+        public async static void SendThreadMessage(List<DataRow> dt,IList<Attachment> items)
         {
             try
             {
-                if (DateTime.UtcNow.Hour == 16 && (DateTime.UtcNow.Minute > 0 && DateTime.UtcNow.Minute <= 3))
-                {
-                    BaseDB.AddToLog("Wywołanie metody SendThreadMessage");
-
-                    List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
-                    List<IGrouping<string, string>> hrefList2 = new List<IGrouping<string, string>>();
-                    List<IGrouping<string, string>> hreflist3 = new List<IGrouping<string, string>>();
-                    List<IGrouping<string, string>> hreflist4 = new List<IGrouping<string, string>>();
-                    var items = BaseGETMethod.GetCardsAttachments(ref hrefList);
-                    hreflist3 = hrefList;
-                    var items2 = BaseGETMethod.GetCardsAttachmentsOrlenLiga(ref hrefList2);
-                    var items4 = BaseGETMethod.GetCardsAttachmentsHokej(ref hreflist4);
-
-                    var items3 = new List<Attachment>();
-
-                    //if(items.Count>0)
-                    //{
-                    //    items3.Add(items[0]);
-                    //}
-
-                    if (items.Count > 0)
-                    {
-                        items3.Add(items[0]);
-                    }
-                    if (items2.Count > 0)
-                    {
-                        items3.Add(items2[0]);
-                    }
-                    if (items4.Count>0)
-                    {
-                        items3.Add(items4[0]);
-                    }
-
-                    if (items3.Count < 3)
-                    {
-                        if (items.Count >= 2)
-                        {
-                            if (items3.Count == 2)
-                            {
-                                items3.Insert(1, items[1]);
-                            }
-                            else if(items3.Count==1)
-                            {
-                                items3.Add(items[1]);
-                                if(items.Count==3)
-                                {
-                                    items3.Add(items[2]);
-                                }
-                            }
-                        }
-                        else if(items2.Count>=2)
-                        {
-                            items3.Add(items2[1]);
-                        }
-                    }
-
-
-
-                    items = items3;
+              
 
 
                     string uzytkownik = "";
                     Int64 uzytkownikId = 0;
-                    DataTable dt = BaseGETMethod.GetUser();
 
                     if (items.Count > 0)
                     {
@@ -118,15 +59,15 @@ namespace GksKatowiceBot.Controllers
 
                             message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
                             message.Attachments = items;
-                            for (int i = 0; i < dt.Rows.Count; i++)
+                            foreach(DataRow dr in dt)
                             {
                                 try
                                 {
-                                    var userAccount = new ChannelAccount(name: dt.Rows[i]["UserName"].ToString(), id: dt.Rows[i]["UserId"].ToString());
+                                    var userAccount = new ChannelAccount(name: dr["UserName"].ToString(), id: dr["UserId"].ToString());
                                     uzytkownik = userAccount.Name;
                                     uzytkownikId = Convert.ToInt64(userAccount.Id);
-                                    var botAccount = new ChannelAccount(name: dt.Rows[i]["BotName"].ToString(), id: dt.Rows[i]["BotId"].ToString());
-                                    var connector = new ConnectorClient(new Uri(dt.Rows[i]["Url"].ToString()), "73267226-823f-46b0-8303-2e866165a3b2", "k6XBDCgzL5452YDhS3PPLsL");
+                                    var botAccount = new ChannelAccount(name: dr["BotName"].ToString(), id: dr["BotId"].ToString());
+                                    var connector = new ConnectorClient(new Uri(dr["Url"].ToString()), "73267226-823f-46b0-8303-2e866165a3b2", "k6XBDCgzL5452YDhS3PPLsL");
                                     var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                     message.From = botAccount;
                                     message.Recipient = userAccount;
@@ -145,12 +86,6 @@ namespace GksKatowiceBot.Controllers
                         {
                             BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
                         }
-
-
-                        BaseDB.AddWiadomoscPilka(hreflist3);
-                        BaseDB.AddWiadomoscSiatka(hrefList2);
-                        BaseDB.AddWiadomoscHokej(hreflist4);
-                    }
                 }
             }
             catch (Exception ex)

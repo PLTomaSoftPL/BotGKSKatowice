@@ -3472,30 +3472,12 @@ namespace GksKatowiceBot
                     //}
 
                     message.Text = wiadomosc;
-                    for (int i = 0; i < dt.Rows.Count; i++)
+                    int i= 0;
+                    while (i <= dt.Rows.Count)
                     {
-                        try
-                        {
-                            if (fromId != dt.Rows[i]["UserId"].ToString())
-                            {
-
-                                var userAccount = new ChannelAccount(name: dt.Rows[i]["UserName"].ToString(), id: dt.Rows[i]["UserId"].ToString());
-                                uzytkownik = userAccount.Name;
-                                var botAccount = new ChannelAccount(name: dt.Rows[i]["BotName"].ToString(), id: dt.Rows[i]["BotId"].ToString());
-                                var connector = new ConnectorClient(new Uri(dt.Rows[i]["Url"].ToString()), "73267226-823f-46b0-8303-2e866165a3b2", "k6XBDCgzL5452YDhS3PPLsL");
-                                var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
-                                message.From = botAccount;
-                                message.Recipient = userAccount;
-                                message.Conversation = new ConversationAccount(id: conversationId.Id, isGroup: false);
-                                //await connector.Conversations.SendToConversationAsync((Activity)message).ConfigureAwait(false);
-
-                                var returne = await connector.Conversations.SendToConversationAsync((Activity)message);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
-                        }
+                        var listaUzytkownikow = dt.AsEnumerable().Skip(i).Take(50).ToList();
+                        SednMessage(listaUzytkownikow,message,fromId);
+                        i += 50;
                     }
                 }
                 catch (Exception ex)
@@ -3509,6 +3491,35 @@ namespace GksKatowiceBot
             }
         }
 
+
+        public async static void SednMessage(List<DataRow> dt, IMessageActivity message,string fromId)
+        {
+            foreach(DataRow dr in dt)
+            {
+                try
+                {
+                    string uzytkownik = "";
+                    if (fromId != dr["UserId"].ToString())
+                    {
+                        var userAccount = new ChannelAccount(name: dr["UserName"].ToString(), id: dr["UserId"].ToString());
+                        uzytkownik = userAccount.Name;
+                        var botAccount = new ChannelAccount(name: dr["BotName"].ToString(), id:dr["BotId"].ToString());
+                        var connector = new ConnectorClient(new Uri(dr["Url"].ToString()), "73267226-823f-46b0-8303-2e866165a3b2", "k6XBDCgzL5452YDhS3PPLsL");
+                        var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
+                        message.From = botAccount;
+                        message.Recipient = userAccount;
+                        message.Conversation = new ConversationAccount(id: conversationId.Id, isGroup: false);
+                        //await connector.Conversations.SendToConversationAsync((Activity)message).ConfigureAwait(false);
+
+                        var returne = await connector.Conversations.SendToConversationAsync((Activity)message);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
+                }
+            }
+        }
 
         public static void CallToChildThread()
         {
