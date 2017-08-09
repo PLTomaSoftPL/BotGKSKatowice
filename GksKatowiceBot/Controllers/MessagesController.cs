@@ -3496,9 +3496,9 @@ namespace GksKatowiceBot
         {
             foreach(DataRow dr in dt)
             {
+                string uzytkownik = "";
                 try
                 {
-                    string uzytkownik = "";
                     if (fromId != dr["UserId"].ToString())
                     {
                         var userAccount = new ChannelAccount(name: dr["UserName"].ToString(), id: dr["UserId"].ToString());

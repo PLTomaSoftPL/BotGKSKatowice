@@ -11,28 +11,30 @@ namespace GksKatowiceBot.Controllers
 {
     public class ThreadClass
     {
-        public async static void SendThreadMessage(List<DataRow> dt,IList<Attachment> items)
+        public async static void SendThreadMessage(List<DataRow> dt, IList<Attachment> items)
         {
             try
             {
-              
+
+                List<DataRow> drDrugaProba = new List<DataRow>();
+                List<DataRow> drtrzeciaProba = new List<DataRow>();
 
 
-                    string uzytkownik = "";
-                    Int64 uzytkownikId = 0;
+                string uzytkownik = "";
+                Int64 uzytkownikId = 0;
 
-                    if (items.Count > 0)
+                if (items.Count > 0)
+                {
+                    try
                     {
-                        try
-                        {
-                            MicrosoftAppCredentials.TrustServiceUrl(@"https://facebook.botframework.com", DateTime.MaxValue);
+                        MicrosoftAppCredentials.TrustServiceUrl(@"https://facebook.botframework.com", DateTime.MaxValue);
 
-                            IMessageActivity message = Activity.CreateMessageActivity();
-                            message.ChannelData = JObject.FromObject(new
-                            {
-                                notification_type = "REGULAR",
-                                quick_replies = new dynamic[]
-                                    {
+                        IMessageActivity message = Activity.CreateMessageActivity();
+                        message.ChannelData = JObject.FromObject(new
+                        {
+                            notification_type = "REGULAR",
+                            quick_replies = new dynamic[]
+                                {
                              new
                                 {
                                     content_type = "text",
@@ -54,38 +56,83 @@ namespace GksKatowiceBot.Controllers
                                     payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
                                 //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
                                 },
-                                                                   }
-                            });
+                                                               }
+                        });
 
-                            message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-                            message.Attachments = items;
-                            foreach(DataRow dr in dt)
+                        message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                        message.Attachments = items;
+                        foreach (DataRow dr in dt)
+                        {
+                            try
                             {
-                                try
-                                {
-                                    var userAccount = new ChannelAccount(name: dr["UserName"].ToString(), id: dr["UserId"].ToString());
-                                    uzytkownik = userAccount.Name;
-                                    uzytkownikId = Convert.ToInt64(userAccount.Id);
-                                    var botAccount = new ChannelAccount(name: dr["BotName"].ToString(), id: dr["BotId"].ToString());
-                                    var connector = new ConnectorClient(new Uri(dr["Url"].ToString()), "73267226-823f-46b0-8303-2e866165a3b2", "k6XBDCgzL5452YDhS3PPLsL");
-                                    var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
-                                    message.From = botAccount;
-                                    message.Recipient = userAccount;
-                                    message.Conversation = new ConversationAccount(id: conversationId.Id, isGroup: false);
-                                    await connector.Conversations.SendToConversationAsync((Activity)message).ConfigureAwait(false);
+                                var userAccount = new ChannelAccount(name: dr["UserName"].ToString(), id: dr["UserId"].ToString());
+                                uzytkownik = userAccount.Name;
+                                uzytkownikId = Convert.ToInt64(userAccount.Id);
+                                var botAccount = new ChannelAccount(name: dr["BotName"].ToString(), id: dr["BotId"].ToString());
+                                var connector = new ConnectorClient(new Uri(dr["Url"].ToString()), "73267226-823f-46b0-8303-2e866165a3b2", "k6XBDCgzL5452YDhS3PPLsL");
+                                var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
+                                message.From = botAccount;
+                                message.Recipient = userAccount;
+                                message.Conversation = new ConversationAccount(id: conversationId.Id, isGroup: false);
+                                await connector.Conversations.SendToConversationAsync((Activity)message).ConfigureAwait(false);
 
-                                }
-                                catch (Exception ex)
-                                {                                    
-                                    BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
-                                    BaseDB.DeleteUser(uzytkownikId);
-                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
+                                drDrugaProba.Add(dr);
+
                             }
                         }
-                        catch (Exception ex)
+                        foreach (DataRow dr in drDrugaProba)
                         {
-                            BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
+                            try
+                            {
+                                var userAccount = new ChannelAccount(name: dr["UserName"].ToString(), id: dr["UserId"].ToString());
+                                uzytkownik = userAccount.Name;
+                                uzytkownikId = Convert.ToInt64(userAccount.Id);
+                                var botAccount = new ChannelAccount(name: dr["BotName"].ToString(), id: dr["BotId"].ToString());
+                                var connector = new ConnectorClient(new Uri(dr["Url"].ToString()), "73267226-823f-46b0-8303-2e866165a3b2", "k6XBDCgzL5452YDhS3PPLsL");
+                                var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
+                                message.From = botAccount;
+                                message.Recipient = userAccount;
+                                message.Conversation = new ConversationAccount(id: conversationId.Id, isGroup: false);
+                                await connector.Conversations.SendToConversationAsync((Activity)message).ConfigureAwait(true);
+
+                            }
+                            catch (Exception ex)
+                            {
+                                BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
+                                drtrzeciaProba.Add(dr);
+                            }
                         }
+                        foreach(DataRow dr in drtrzeciaProba)
+                        {
+                            try
+                            {
+                                var userAccount = new ChannelAccount(name: dr["UserName"].ToString(), id: dr["UserId"].ToString());
+                                uzytkownik = userAccount.Name;
+                                uzytkownikId = Convert.ToInt64(userAccount.Id);
+                                var botAccount = new ChannelAccount(name: dr["BotName"].ToString(), id: dr["BotId"].ToString());
+                                var connector = new ConnectorClient(new Uri(dr["Url"].ToString()), "73267226-823f-46b0-8303-2e866165a3b2", "k6XBDCgzL5452YDhS3PPLsL");
+                                var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
+                                message.From = botAccount;
+                                message.Recipient = userAccount;
+                                message.Conversation = new ConversationAccount(id: conversationId.Id, isGroup: false);
+                                await connector.Conversations.SendToConversationAsync((Activity)message).ConfigureAwait(true);
+
+                            }
+                            catch (Exception ex)
+                            {
+                                BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
+                                BaseDB.DeleteUser(uzytkownikId);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
+                    }
                 }
             }
             catch (Exception ex)

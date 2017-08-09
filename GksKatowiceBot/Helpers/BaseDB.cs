@@ -104,7 +104,7 @@ namespace GksKatowiceBot.Helpers
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
 
-                cmd.CommandText = "Update [dbo].[UserGKSKatowice] set flgDeleted=1 where UserId=" + UserId.ToString();
+                cmd.CommandText = "Update [dbo].[UserGKSKatowice] set flgDeleted=1 where UserId='" + UserId.ToString()+"'";
                 cmd.CommandType = CommandType.Text;
                 cmd.Connection = sqlConnection1;
 
@@ -113,9 +113,9 @@ namespace GksKatowiceBot.Helpers
 
                 sqlConnection1.Close();
             }
-            catch
+            catch (Exception ex )
             {
-                AddToLog("Blad usuwania uzytkownika: " + UserId);
+                AddToLog("Blad usuwania uzytkownika: " + UserId+"  " + ex.Message);
             }
         }
         public static void AddWiadomoscPilka(List<System.Linq.IGrouping<string, string>> hrefList)
