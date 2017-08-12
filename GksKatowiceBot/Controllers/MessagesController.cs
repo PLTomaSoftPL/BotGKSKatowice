@@ -32,33 +32,39 @@ namespace GksKatowiceBot
                 if (activity.Type == ActivityTypes.Message)
                 {
 
-                    if (BaseDB.czyAdministrator(activity.From.Id)!=null && ( ((activity.Text!=null && activity.Text.IndexOf("!!!") == 0 )|| (activity.Attachments!=null && activity.Attachments.Count>0))))
+                    if (BaseDB.czyAdministrator(activity.From.Id) != null && (((activity.Text != null && activity.Text.IndexOf("!!!") == 0) || (activity.Attachments != null && activity.Attachments.Count > 0))))
                     {
                         WebClient client = new WebClient();
 
-                        if (activity.Attachments!=null)
+
+                        if (activity.Text.ToUpper().Contains("POWIADOMIENIA"))
                         {
-                            //Uri uri = new Uri(activity.Attachments[0].ContentUrl);
-                            string filename = activity.Attachments[0].ContentUrl.Substring(activity.Attachments[0].ContentUrl.Length - 4, 3).Replace(".","");
-
-
-                          //  WebClient client = new WebClient();
-                            client.Credentials = new NetworkCredential("serwer1606926", "Tomason1910");
-                            client.BaseAddress = "ftp://serwer1606926.home.pl/public_html/pub/";
-
-
-                            byte[] data;
-                            using (WebClient client2 = new WebClient())
-                            {
-                                data = client2.DownloadData(activity.Attachments[0].ContentUrl);
-                            }
-                            if(activity.Attachments[0].ContentType.Contains("image")) client.UploadData(filename+".png", data); //since the baseaddress
-                            else if(activity.Attachments[0].ContentType.Contains("video")) client.UploadData(filename + ".mp4", data);
+                            CreateMessagePowiadomienia(activity.From.Id);
                         }
 
+                        else
+                        {
+                            if (activity.Attachments != null)
+                            {
+                                //Uri uri = new Uri(activity.Attachments[0].ContentUrl);
+                                string filename = activity.Attachments[0].ContentUrl.Substring(activity.Attachments[0].ContentUrl.Length - 4, 3).Replace(".", "");
 
-                        CreateMessage(activity.Attachments, activity.Text == null ? "" : activity.Text.Replace("!!!",""),activity.From.Id);
-                        
+
+                                //  WebClient client = new WebClient();
+                                client.Credentials = new NetworkCredential("serwer1606926", "Tomason1910");
+                                client.BaseAddress = "ftp://serwer1606926.home.pl/public_html/pub/";
+
+
+                                byte[] data;
+                                using (WebClient client2 = new WebClient())
+                                {
+                                    data = client2.DownloadData(activity.Attachments[0].ContentUrl);
+                                }
+                                if (activity.Attachments[0].ContentType.Contains("image")) client.UploadData(filename + ".png", data); //since the baseaddress
+                                else if (activity.Attachments[0].ContentType.Contains("video")) client.UploadData(filename + ".mp4", data);
+                            }
+                            CreateMessage(activity.Attachments, activity.Text == null ? "" : activity.Text.Replace("!!!", ""), activity.From.Id);
+                        }
                     }
                     else
                     {
@@ -67,18 +73,23 @@ namespace GksKatowiceBot
                         {
                             try
                             {
-                                dynamic stuff = JsonConvert.DeserializeObject(activity.ChannelData.ToString());
+                                var stuff = JsonConvert.DeserializeObject<ClassHelpers.RootObject>(activity.ChannelData.ToString());
+                                //komenda = stuff.message.quick_reply.payload;
+                     //           BaseDB.AddToLog("Przesłąny json " + activity.ChannelData.ToString());
                                 komenda = stuff.message.quick_reply.payload;
+
+               //                 BaseDB.AddToLog(komenda);
+
                             }
                             catch (Exception ex)
                             {
-                              
+
                             }
                         }
 
                         MicrosoftAppCredentials.TrustServiceUrl(@"https://facebook.botframework.com", DateTime.MaxValue);
 
-                        if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Hokej" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_Hokej" || activity.Text.ToLower()=="hokej")
+                        if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Hokej" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_Hokej" || activity.Text.ToLower() == "hokej")
                         {
                             Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
                             userStruct.userName = activity.From.Name;
@@ -87,7 +98,7 @@ namespace GksKatowiceBot
                             userStruct.botId = activity.Recipient.Id;
                             userStruct.ServiceUrl = activity.ServiceUrl;
 
-                       //     BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
+                            //     BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
 
                             Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
@@ -152,7 +163,7 @@ namespace GksKatowiceBot
                             await connector.Conversations.SendToConversationAsync((Activity)message);
                         }
                         else
-                            if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna"||activity.Text.ToLower() == "piłka nożna" || activity.Text.ToLower() == "pilka nozna")
+                            if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna" || activity.Text.ToLower() == "piłka nożna" || activity.Text.ToLower() == "pilka nozna")
                         {
                             Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
                             userStruct.userName = activity.From.Name;
@@ -161,7 +172,7 @@ namespace GksKatowiceBot
                             userStruct.botId = activity.Recipient.Id;
                             userStruct.ServiceUrl = activity.ServiceUrl;
 
-                    //        BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
+                            //        BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
 
                             Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
@@ -241,7 +252,7 @@ namespace GksKatowiceBot
                             userStruct.botId = activity.Recipient.Id;
                             userStruct.ServiceUrl = activity.ServiceUrl;
 
-                       //     BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
+                            //     BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
 
                             Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
@@ -486,7 +497,7 @@ namespace GksKatowiceBot
                             await connector.Conversations.SendToConversationAsync((Activity)message);
                         }
 
-                        else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Pilka_NoznaAktualnosci" || activity.Text== "DEVELOPER_DEFINED_PAYLOAD_Pilka_NoznaAktualnosci")
+                        else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Pilka_NoznaAktualnosci" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_Pilka_NoznaAktualnosci")
                         {
                             Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
                             userStruct.userName = activity.From.Name;
@@ -1032,9 +1043,9 @@ namespace GksKatowiceBot
                             var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                             IMessageActivity message = Activity.CreateMessageActivity();
                             byte czyPowiadomienia = BaseDB.czyPowiadomienia(userAccount.Id);
-                            if (czyPowiadomienia == 0)
+                            if (czyPowiadomienia == 1)
                             {
-                                message.Text = "Opcja automatycznych, codziennych powiadomień o aktualnościach  jest włączona. Jeśli nie chcesz otrzymywać powiadomień  możesz je wyłączyć.";
+                                message.Text = "Opcja automatycznych, codziennych powiadomień o aktualnościach  jest włączona. Jeśli nie chcesz otrzymywać powiadomień  możesz je wyłączyć lub zmienić częstotliwość ich otrzymywania. Wybierz jedną z opcji";
                                 message.ChannelData = JObject.FromObject(new
                                 {
                                     notification_type = "REGULAR",
@@ -1050,42 +1061,76 @@ namespace GksKatowiceBot
                                     // },
                                     quick_replies = new dynamic[]
                                            {
-                                //new
-                                //{
-                                //    content_type = "text",
-                                //    title = "Aktualności",
-                                //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                                //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                                //},
-                                //new
-                                //{
-                                //    content_type = "text",
-                                //    title = "Aktualności",
-                                //    payload = "DEVELOPER_DEFINED_PAYLOAD_Aktualności",
-                                ////       image_url = "https://www.samo-lepky.sk/data/11/hokej5.png"
-                                //},
-                                new
+                                                                new
+                                {
+                                    content_type = "text",
+                                    title = "Trzy razy w tygodniu",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Powiadomienia3WTygodniu",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
+                                                                                                               new
+                                {
+                                    content_type = "text",
+                                    title = "Raz w tygodniu",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaRazWTygodniu",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
+                                                                                                new
                                 {
                                     content_type = "text",
                                     title = "Wyłącz powiadomienia",
                                     payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaWylacz",
-                                    //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                 //   image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
                                 },
-                                //new
-                                //{
-                                //    content_type = "text",
-                                //    title = "Włącz",
-                                //    payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaWlacz",
-                                //   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                                //},
+                                           }
+                                });
+                            }
+                            else if (czyPowiadomienia == 2)
+                            {
+                                message.Text = "Opcja automatycznych, powiadomień o aktualnościach otrzymywanych trzy razy w tygodniu jest włączona. Jeśli nie chcesz otrzymywać powiadomień  możesz je wyłączyć lub zmienić częstotliwość ich otrzymywania. Wybierz jedną z opcji";
+                                message.ChannelData = JObject.FromObject(new
+                                {
+                                    notification_type = "REGULAR",
+                                    //buttons = new dynamic[]
+                                    // {
+                                    //     new
+                                    //     {
+                                    //    type ="postback",
+                                    //    title="Tytul",
+                                    //    vslue = "tytul",
+                                    //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                    //     }
+                                    // },
+                                    quick_replies = new dynamic[]
+                                           {
+                                                                               new
+                                {
+                                    content_type = "text",
+                                    title = "Codziennie",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaCodziennie",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
+                                                                                                               new
+                                {
+                                    content_type = "text",
+                                    title = "Raz w tygodniu",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaRazWTygodniu",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
+                                                                                                new
+                                {
+                                    content_type = "text",
+                                    title = "Wyłącz powiadomienia",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaWylacz",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
 
                                            }
                                 });
                             }
-                            else if (czyPowiadomienia == 1)
+                            else if (czyPowiadomienia == 3)
                             {
-                                message.Text = "Opcja automatycznych, codziennych  powiadomień o aktualnościach jest wyłączona. Jeśli chcesz otrzymywać powiadomienia możesz je włączyć.";
+                                message.Text = "Opcja automatycznych, powiadomień o aktualnościach przesyłanych raz w tygodniu jest włączona. Jeśli nie chcesz otrzymywać powiadomień  możesz je wyłączyć lub zmienić częstotliwość ich otrzymywania. Wybierz jedną z opcji";
                                 message.ChannelData = JObject.FromObject(new
                                 {
                                     notification_type = "REGULAR",
@@ -1126,8 +1171,65 @@ namespace GksKatowiceBot
                                 new
                                 {
                                     content_type = "text",
-                                    title = "Włącz powiadomienia",
-                                    payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaWlacz",
+                                    title = "Codziennie",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaCodziennie",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
+                                                                new
+                                {
+                                    content_type = "text",
+                                    title = "Trzy razy w tygodniu",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Powiadomienia3WTygodniu",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
+                                                                                                new
+                                {
+                                    content_type = "text",
+                                    title = "Wyłącz powiadomienia",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaWylacz",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
+
+           }
+                                });
+                            }
+                            else if (czyPowiadomienia == 4)
+                            {
+                                message.Text = "Opcja automatycznych, powiadomień o aktualnościach jest wyłączona. Jeśli chcesz otrzymywać powiadomienia możesz je włączyć.";
+                                message.ChannelData = JObject.FromObject(new
+                                {
+                                    notification_type = "REGULAR",
+                                    //buttons = new dynamic[]
+                                    // {
+                                    //     new
+                                    //     {
+                                    //    type ="postback",
+                                    //    title="Tytul",
+                                    //    vslue = "tytul",
+                                    //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                    //     }
+                                    // },
+                                    quick_replies = new dynamic[]
+           {
+             new
+                                {
+                                    content_type = "text",
+                                    title = "Codziennie",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaCodziennie",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
+                                                                new
+                                {
+                                    content_type = "text",
+                                    title = "Trzy razy w tygodniu",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Powiadomienia3WTygodniu",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
+                                                                                                               new
+                                {
+                                    content_type = "text",
+                                    title = "Raz w tygodniu",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaRazWTygodniu",
                                    //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
                                 },
 
@@ -1141,6 +1243,232 @@ namespace GksKatowiceBot
                             List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
                             //    message.Attachments = BaseGETMethod.GetCardsAttachmentsNajnowsze(ref hrefList, true);
                             //     message.Text = "W kazdej chwili możesz włączyć lub wyłączyć otrzymywanie powiadomień na swojego Messengera. Co chcesz zrobić z powiadomieniami? ";
+                            await connector.Conversations.SendToConversationAsync((Activity)message);
+                        }
+
+                        else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaCodziennie" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaCodziennie" || activity.Text == "Wyłącz")
+                        {
+                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
+                            userStruct.userName = activity.From.Name;
+                            userStruct.userId = activity.From.Id;
+                            userStruct.botName = activity.Recipient.Name;
+                            userStruct.botId = activity.Recipient.Id;
+                            userStruct.ServiceUrl = activity.ServiceUrl;
+
+                            // BaseDB.AddToLog("UserName: " + userStruct.userName + " User Id: " + userStruct.userId + " BOtId: " + userStruct.botId + " BotName: " + userStruct.botName + " url: " + userStruct.ServiceUrl);
+                            //BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
+
+                            Parameters.Parameters.listaAdresow.Add(userStruct);
+                            ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                            var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
+                            var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
+                            connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                            var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
+                            IMessageActivity message = Activity.CreateMessageActivity();
+                            message.ChannelData = JObject.FromObject(new
+                            {
+                                notification_type = "REGULAR",
+                                //buttons = new dynamic[]
+                                // {
+                                //     new
+                                //     {
+                                //    type ="postback",
+                                //    title="Tytul",
+                                //    vslue = "tytul",
+                                //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                //     }
+                                // },
+                                quick_replies = new dynamic[]
+                            {
+                                //new
+                                //{
+                                //    content_type = "text",
+                                //    title = "Aktualności",
+                                //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
+                                //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
+                                //},
+                                new
+                                {
+                                    content_type = "text",
+                                    title = "Piłka nożna",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
+                                    //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                            //        image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                },
+                                new
+                                {
+                                    content_type = "text",
+                                    title = "Siatkówka",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
+                       //             image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },                                new
+                                {
+                                    content_type = "text",
+                                    title = "Hokej",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
+                                //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                },
+                                                           }
+                            });
+                            message.From = botAccount;
+                            message.Recipient = userAccount;
+                            message.Conversation = new ConversationAccount(id: conversationId.Id);
+                            message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                            List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
+                            //  message.Attachments = BaseGETMethod.GetCardsAttachmentsNajnowsze(ref hrefList, true);
+                            message.Text = "Zmieniłem ustawienia powiadomień. Otrzymasz powiadomienia codziennie po godzinie 18.";
+                            BaseDB.ChangeNotification(userAccount.Id, 1);
+                            await connector.Conversations.SendToConversationAsync((Activity)message);
+                        }
+
+                        else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Powiadomienia3WTygodniu" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_Powiadomienia3WTygodniu" || activity.Text == "Wyłącz")
+                        {
+                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
+                            userStruct.userName = activity.From.Name;
+                            userStruct.userId = activity.From.Id;
+                            userStruct.botName = activity.Recipient.Name;
+                            userStruct.botId = activity.Recipient.Id;
+                            userStruct.ServiceUrl = activity.ServiceUrl;
+
+                            // BaseDB.AddToLog("UserName: " + userStruct.userName + " User Id: " + userStruct.userId + " BOtId: " + userStruct.botId + " BotName: " + userStruct.botName + " url: " + userStruct.ServiceUrl);
+                            //BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
+
+                            Parameters.Parameters.listaAdresow.Add(userStruct);
+                            ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                            var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
+                            var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
+                            connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                            var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
+                            IMessageActivity message = Activity.CreateMessageActivity();
+                            message.ChannelData = JObject.FromObject(new
+                            {
+                                notification_type = "REGULAR",
+                                //buttons = new dynamic[]
+                                // {
+                                //     new
+                                //     {
+                                //    type ="postback",
+                                //    title="Tytul",
+                                //    vslue = "tytul",
+                                //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                //     }
+                                // },
+                                quick_replies = new dynamic[]
+                            {
+                                //new
+                                //{
+                                //    content_type = "text",
+                                //    title = "Aktualności",
+                                //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
+                                //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
+                                //},
+                                new
+                                {
+                                    content_type = "text",
+                                    title = "Piłka nożna",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
+                                    //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                            //        image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                },
+                                new
+                                {
+                                    content_type = "text",
+                                    title = "Siatkówka",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
+                       //             image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },                                new
+                                {
+                                    content_type = "text",
+                                    title = "Hokej",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
+                                //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                },
+                                                           }
+                            });
+                            message.From = botAccount;
+                            message.Recipient = userAccount;
+                            message.Conversation = new ConversationAccount(id: conversationId.Id);
+                            message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                            List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
+                            //  message.Attachments = BaseGETMethod.GetCardsAttachmentsNajnowsze(ref hrefList, true);
+                            message.Text = "Zmieniłem ustawienia powiadomień. Otrzymasz powiadomienia w poniedziałki, środy i soboty po godzinie 18.";
+                            BaseDB.ChangeNotification(userAccount.Id, 2);
+                            await connector.Conversations.SendToConversationAsync((Activity)message);
+                        }
+
+
+                        else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaRazWTygodniu" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaRazWTygodniu" || activity.Text == "Wyłącz")
+                        {
+                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
+                            userStruct.userName = activity.From.Name;
+                            userStruct.userId = activity.From.Id;
+                            userStruct.botName = activity.Recipient.Name;
+                            userStruct.botId = activity.Recipient.Id;
+                            userStruct.ServiceUrl = activity.ServiceUrl;
+
+                            // BaseDB.AddToLog("UserName: " + userStruct.userName + " User Id: " + userStruct.userId + " BOtId: " + userStruct.botId + " BotName: " + userStruct.botName + " url: " + userStruct.ServiceUrl);
+                            //BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
+
+                            Parameters.Parameters.listaAdresow.Add(userStruct);
+                            ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                            var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
+                            var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
+                            connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                            var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
+                            IMessageActivity message = Activity.CreateMessageActivity();
+                            message.ChannelData = JObject.FromObject(new
+                            {
+                                notification_type = "REGULAR",
+                                //buttons = new dynamic[]
+                                // {
+                                //     new
+                                //     {
+                                //    type ="postback",
+                                //    title="Tytul",
+                                //    vslue = "tytul",
+                                //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                //     }
+                                // },
+                                quick_replies = new dynamic[]
+                            {
+                                //new
+                                //{
+                                //    content_type = "text",
+                                //    title = "Aktualności",
+                                //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
+                                //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
+                                //},
+                                new
+                                {
+                                    content_type = "text",
+                                    title = "Piłka nożna",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
+                                    //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                            //        image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                },
+                                new
+                                {
+                                    content_type = "text",
+                                    title = "Siatkówka",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
+                       //             image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },                                new
+                                {
+                                    content_type = "text",
+                                    title = "Hokej",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
+                                //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                },
+                                                           }
+                            });
+                            message.From = botAccount;
+                            message.Recipient = userAccount;
+                            message.Conversation = new ConversationAccount(id: conversationId.Id);
+                            message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                            List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
+                            //  message.Attachments = BaseGETMethod.GetCardsAttachmentsNajnowsze(ref hrefList, true);
+                            message.Text = "Zmieniłem ustawienia powiadomień. Otrzymasz powiadomienia w każdy poniedziałek po godzinie 18.";
+                            BaseDB.ChangeNotification(userAccount.Id, 3);
                             await connector.Conversations.SendToConversationAsync((Activity)message);
                         }
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaWylacz" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaWylacz" || activity.Text == "Wyłącz")
@@ -1213,84 +1541,11 @@ namespace GksKatowiceBot
                             message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
                             List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
                             //  message.Attachments = BaseGETMethod.GetCardsAttachmentsNajnowsze(ref hrefList, true);
-                            message.Text = "Zrozumiałem, wyłączyłem automatyczne, codzienne powiadomienia o aktualnościach.";
-                            BaseDB.ChangeNotification(userAccount.Id, 1);
+                            message.Text = "Zmieniłem ustawienia powiadomień";
+                            BaseDB.ChangeNotification(userAccount.Id, 4);
                             await connector.Conversations.SendToConversationAsync((Activity)message);
                         }
-                        else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaWlacz" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaWlacz" || activity.Text == "Wyłącz")
-                        {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
 
-                            // BaseDB.AddToLog("UserName: " + userStruct.userName + " User Id: " + userStruct.userId + " BOtId: " + userStruct.botId + " BotName: " + userStruct.botName + " url: " + userStruct.ServiceUrl);
-                            //BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
-                            ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-                            var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
-                            var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
-                            connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-                            var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
-                            IMessageActivity message = Activity.CreateMessageActivity();
-                            message.ChannelData = JObject.FromObject(new
-                            {
-                                notification_type = "REGULAR",
-                                //buttons = new dynamic[]
-                                // {
-                                //     new
-                                //     {
-                                //    type ="postback",
-                                //    title="Tytul",
-                                //    vslue = "tytul",
-                                //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                                //     }
-                                // },
-                                quick_replies = new dynamic[]
-                            {
-                                //new
-                                //{
-                                //    content_type = "text",
-                                //    title = "Aktualności",
-                                //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                                //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                                //},
-                                new
-                                {
-                                    content_type = "text",
-                                    title = "Piłka nożna",
-                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                                    //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                            //        image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                                },
-                                new
-                                {
-                                    content_type = "text",
-                                    title = "Siatkówka",
-                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                       //             image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                                },                                new
-                                {
-                                    content_type = "text",
-                                    title = "Hokej",
-                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                                //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                },
-                                                           }
-                            });
-                            message.From = botAccount;
-                            message.Recipient = userAccount;
-                            message.Conversation = new ConversationAccount(id: conversationId.Id);
-                            message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-                            List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
-                            //  message.Attachments = BaseGETMethod.GetCardsAttachmentsNajnowsze(ref hrefList, true);
-                            message.Text = "Zrozumiałem, włączyłem automatyczne, codzienne powiadomienia o aktualnościach.";
-                            BaseDB.ChangeNotification(userAccount.Id, 0);
-                            await connector.Conversations.SendToConversationAsync((Activity)message);
-                        }
 
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_SiatkowkaGaleria")
                         {
@@ -1514,7 +1769,7 @@ namespace GksKatowiceBot
                                 message.Conversation = new ConversationAccount(id: conversationId.Id);
                                 message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
                                 List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
-                               // message.Text = "Wybierz jedną z opcji";
+                                // message.Text = "Wybierz jedną z opcji";
                                 message.Attachments = BaseGETMethod.GetCardsAttachmentsFoto();
 
                                 await connector.Conversations.SendToConversationAsync((Activity)message);
@@ -1595,7 +1850,7 @@ namespace GksKatowiceBot
                             }
 
 
-                            else if (activity.Text.ToUpper().Contains("KIBICE") || activity.Text.ToUpper().Contains("KIBIC")|| activity.Text.ToUpper().Contains("FANI"))
+                            else if (activity.Text.ToUpper().Contains("KIBICE") || activity.Text.ToUpper().Contains("KIBIC") || activity.Text.ToUpper().Contains("FANI"))
                             {
                                 Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
                                 userStruct.userName = activity.From.Name;
@@ -1743,7 +1998,7 @@ namespace GksKatowiceBot
 
                                 await connector.Conversations.SendToConversationAsync((Activity)message);
                             }
-                            else if(activity.Text.ToUpper().Contains("SKLEP") || activity.Text.ToUpper().Contains("GADŻETY")|| activity.Text.ToUpper().Contains("STREFA GIEKSY"))
+                            else if (activity.Text.ToUpper().Contains("SKLEP") || activity.Text.ToUpper().Contains("GADŻETY") || activity.Text.ToUpper().Contains("STREFA GIEKSY"))
                             {
                                 Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
                                 userStruct.userName = activity.From.Name;
@@ -1760,51 +2015,51 @@ namespace GksKatowiceBot
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
 
-                           //     message.ChannelData = JObject.FromObject(new
-                           //     {
-                           //         notification_type = "REGULAR",
-                           //         //buttons = new dynamic[]
-                           //         // {
-                           //         //     new
-                           //         //     {
-                           //         //    type ="postback",
-                           //         //    title="Tytul",
-                           //         //    vslue = "tytul",
-                           //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                           //         //     }
-                           //         // },
-                           //         quick_replies = new dynamic[]
-                           //     {
-                           //     //new
-                           //     //{
-                           //     //    content_type = "text",
-                           //     //    title = "Aktualności",
-                           //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                           //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                           //     //},
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Piłka nożna",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                           //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                           //     },
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Siatkówka",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                           ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                           //     },                                new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Hokej",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                           //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //     },
-                           //                                    }
-                           //     });
+                                //     message.ChannelData = JObject.FromObject(new
+                                //     {
+                                //         notification_type = "REGULAR",
+                                //         //buttons = new dynamic[]
+                                //         // {
+                                //         //     new
+                                //         //     {
+                                //         //    type ="postback",
+                                //         //    title="Tytul",
+                                //         //    vslue = "tytul",
+                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                //         //     }
+                                //         // },
+                                //         quick_replies = new dynamic[]
+                                //     {
+                                //     //new
+                                //     //{
+                                //     //    content_type = "text",
+                                //     //    title = "Aktualności",
+                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
+                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
+                                //     //},
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Piłka nożna",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
+                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                //     },
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Siatkówka",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
+                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                //     },                                new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Hokej",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
+                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //     },
+                                //                                    }
+                                //     });
 
 
                                 message.From = botAccount;
@@ -2577,51 +2832,51 @@ namespace GksKatowiceBot
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
 
-                           //     message.ChannelData = JObject.FromObject(new
-                           //     {
-                           //         notification_type = "REGULAR",
-                           //         //buttons = new dynamic[]
-                           //         // {
-                           //         //     new
-                           //         //     {
-                           //         //    type ="postback",
-                           //         //    title="Tytul",
-                           //         //    vslue = "tytul",
-                           //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                           //         //     }
-                           //         // },
-                           //         quick_replies = new dynamic[]
-                           //     {
-                           //     //new
-                           //     //{
-                           //     //    content_type = "text",
-                           //     //    title = "Aktualności",
-                           //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                           //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                           //     //},
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Piłka nożna",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                           //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                           //     },
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Siatkówka",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                           ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                           //     },                                new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Hokej",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                           //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //     },
-                           //                                    }
-                           //     });
+                                //     message.ChannelData = JObject.FromObject(new
+                                //     {
+                                //         notification_type = "REGULAR",
+                                //         //buttons = new dynamic[]
+                                //         // {
+                                //         //     new
+                                //         //     {
+                                //         //    type ="postback",
+                                //         //    title="Tytul",
+                                //         //    vslue = "tytul",
+                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                //         //     }
+                                //         // },
+                                //         quick_replies = new dynamic[]
+                                //     {
+                                //     //new
+                                //     //{
+                                //     //    content_type = "text",
+                                //     //    title = "Aktualności",
+                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
+                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
+                                //     //},
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Piłka nożna",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
+                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                //     },
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Siatkówka",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
+                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                //     },                                new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Hokej",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
+                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //     },
+                                //                                    }
+                                //     });
 
 
                                 message.From = botAccount;
@@ -2634,7 +2889,7 @@ namespace GksKatowiceBot
 
                                 await connector.Conversations.SendToConversationAsync((Activity)message);
                             }
-                            else if (activity.Text.ToUpper().Contains("TABELA") || activity.Text.ToUpper().Contains("TERMINARZ")|| activity.Text.ToUpper().Contains("WYNIK")||activity.Text.ToUpper().Contains("WYNIKI"))
+                            else if (activity.Text.ToUpper().Contains("TABELA") || activity.Text.ToUpper().Contains("TERMINARZ") || activity.Text.ToUpper().Contains("WYNIK") || activity.Text.ToUpper().Contains("WYNIKI"))
                             {
                                 Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
                                 userStruct.userName = activity.From.Name;
@@ -2651,51 +2906,51 @@ namespace GksKatowiceBot
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
 
-                           //     message.ChannelData = JObject.FromObject(new
-                           //     {
-                           //         notification_type = "REGULAR",
-                           //         //buttons = new dynamic[]
-                           //         // {
-                           //         //     new
-                           //         //     {
-                           //         //    type ="postback",
-                           //         //    title="Tytul",
-                           //         //    vslue = "tytul",
-                           //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                           //         //     }
-                           //         // },
-                           //         quick_replies = new dynamic[]
-                           //     {
-                           //     //new
-                           //     //{
-                           //     //    content_type = "text",
-                           //     //    title = "Aktualności",
-                           //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                           //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                           //     //},
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Piłka nożna",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                           //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                           //     },
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Siatkówka",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                           ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                           //     },                                new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Hokej",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                           //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //     },
-                           //                                    }
-                           //     });
+                                //     message.ChannelData = JObject.FromObject(new
+                                //     {
+                                //         notification_type = "REGULAR",
+                                //         //buttons = new dynamic[]
+                                //         // {
+                                //         //     new
+                                //         //     {
+                                //         //    type ="postback",
+                                //         //    title="Tytul",
+                                //         //    vslue = "tytul",
+                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                //         //     }
+                                //         // },
+                                //         quick_replies = new dynamic[]
+                                //     {
+                                //     //new
+                                //     //{
+                                //     //    content_type = "text",
+                                //     //    title = "Aktualności",
+                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
+                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
+                                //     //},
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Piłka nożna",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
+                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                //     },
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Siatkówka",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
+                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                //     },                                new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Hokej",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
+                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //     },
+                                //                                    }
+                                //     });
 
 
                                 message.From = botAccount;
@@ -2708,7 +2963,7 @@ namespace GksKatowiceBot
 
                                 await connector.Conversations.SendToConversationAsync((Activity)message);
                             }
-                            else if (activity.Text.ToUpper().Contains("SKŁAD") || activity.Text.ToUpper().Contains("DRUŻYNA")|| activity.Text.ToUpper().Contains("ZESPÓŁ") || activity.Text.ToUpper().Contains("ZAWODNICY"))
+                            else if (activity.Text.ToUpper().Contains("SKŁAD") || activity.Text.ToUpper().Contains("DRUŻYNA") || activity.Text.ToUpper().Contains("ZESPÓŁ") || activity.Text.ToUpper().Contains("ZAWODNICY"))
                             {
                                 Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
                                 userStruct.userName = activity.From.Name;
@@ -2725,51 +2980,51 @@ namespace GksKatowiceBot
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
 
-                           //     message.ChannelData = JObject.FromObject(new
-                           //     {
-                           //         notification_type = "REGULAR",
-                           //         //buttons = new dynamic[]
-                           //         // {
-                           //         //     new
-                           //         //     {
-                           //         //    type ="postback",
-                           //         //    title="Tytul",
-                           //         //    vslue = "tytul",
-                           //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                           //         //     }
-                           //         // },
-                           //         quick_replies = new dynamic[]
-                           //     {
-                           //     //new
-                           //     //{
-                           //     //    content_type = "text",
-                           //     //    title = "Aktualności",
-                           //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                           //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                           //     //},
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Piłka nożna",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                           //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                           //     },
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Siatkówka",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                           ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                           //     },                                new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Hokej",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                           //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //     },
-                           //                                    }
-                           //     });
+                                //     message.ChannelData = JObject.FromObject(new
+                                //     {
+                                //         notification_type = "REGULAR",
+                                //         //buttons = new dynamic[]
+                                //         // {
+                                //         //     new
+                                //         //     {
+                                //         //    type ="postback",
+                                //         //    title="Tytul",
+                                //         //    vslue = "tytul",
+                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                //         //     }
+                                //         // },
+                                //         quick_replies = new dynamic[]
+                                //     {
+                                //     //new
+                                //     //{
+                                //     //    content_type = "text",
+                                //     //    title = "Aktualności",
+                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
+                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
+                                //     //},
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Piłka nożna",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
+                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                //     },
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Siatkówka",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
+                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                //     },                                new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Hokej",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
+                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //     },
+                                //                                    }
+                                //     });
 
 
                                 message.From = botAccount;
@@ -2799,51 +3054,51 @@ namespace GksKatowiceBot
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
 
-                           //     message.ChannelData = JObject.FromObject(new
-                           //     {
-                           //         notification_type = "REGULAR",
-                           //         //buttons = new dynamic[]
-                           //         // {
-                           //         //     new
-                           //         //     {
-                           //         //    type ="postback",
-                           //         //    title="Tytul",
-                           //         //    vslue = "tytul",
-                           //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                           //         //     }
-                           //         // },
-                           //         quick_replies = new dynamic[]
-                           //     {
-                           //     //new
-                           //     //{
-                           //     //    content_type = "text",
-                           //     //    title = "Aktualności",
-                           //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                           //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                           //     //},
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Piłka nożna",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                           //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                           //     },
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Siatkówka",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                           ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                           //     },                                new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Hokej",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                           //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //     },
-                           //                                    }
-                           //     });
+                                //     message.ChannelData = JObject.FromObject(new
+                                //     {
+                                //         notification_type = "REGULAR",
+                                //         //buttons = new dynamic[]
+                                //         // {
+                                //         //     new
+                                //         //     {
+                                //         //    type ="postback",
+                                //         //    title="Tytul",
+                                //         //    vslue = "tytul",
+                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                //         //     }
+                                //         // },
+                                //         quick_replies = new dynamic[]
+                                //     {
+                                //     //new
+                                //     //{
+                                //     //    content_type = "text",
+                                //     //    title = "Aktualności",
+                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
+                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
+                                //     //},
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Piłka nożna",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
+                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                //     },
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Siatkówka",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
+                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                //     },                                new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Hokej",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
+                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //     },
+                                //                                    }
+                                //     });
 
 
                                 message.From = botAccount;
@@ -2873,51 +3128,51 @@ namespace GksKatowiceBot
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
 
-                           //     message.ChannelData = JObject.FromObject(new
-                           //     {
-                           //         notification_type = "REGULAR",
-                           //         //buttons = new dynamic[]
-                           //         // {
-                           //         //     new
-                           //         //     {
-                           //         //    type ="postback",
-                           //         //    title="Tytul",
-                           //         //    vslue = "tytul",
-                           //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                           //         //     }
-                           //         // },
-                           //         quick_replies = new dynamic[]
-                           //     {
-                           //     //new
-                           //     //{
-                           //     //    content_type = "text",
-                           //     //    title = "Aktualności",
-                           //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                           //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                           //     //},
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Piłka nożna",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                           //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                           //     },
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Siatkówka",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                           ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                           //     },                                new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Hokej",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                           //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //     },
-                           //                                    }
-                           //     });
+                                //     message.ChannelData = JObject.FromObject(new
+                                //     {
+                                //         notification_type = "REGULAR",
+                                //         //buttons = new dynamic[]
+                                //         // {
+                                //         //     new
+                                //         //     {
+                                //         //    type ="postback",
+                                //         //    title="Tytul",
+                                //         //    vslue = "tytul",
+                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                //         //     }
+                                //         // },
+                                //         quick_replies = new dynamic[]
+                                //     {
+                                //     //new
+                                //     //{
+                                //     //    content_type = "text",
+                                //     //    title = "Aktualności",
+                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
+                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
+                                //     //},
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Piłka nożna",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
+                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                //     },
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Siatkówka",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
+                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                //     },                                new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Hokej",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
+                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //     },
+                                //                                    }
+                                //     });
 
 
                                 message.From = botAccount;
@@ -2928,7 +3183,7 @@ namespace GksKatowiceBot
                                 message.Text = "";
                                 message.Attachments = Helpers.BaseGETMethod.GetCardsAttachmentsExtra(ref hrefList, true, "http://mloda-gieksa.pl/", "Akademia GieKSy", "http://mloda-gieksa.pl/sgfx/logo.png");
 
-                                await connector.Conversations.SendToConversationAsync((Activity)message);   
+                                await connector.Conversations.SendToConversationAsync((Activity)message);
                             }
                             else if (activity.Text.ToUpper().Contains("KONTAKT") || activity.Text.ToUpper().Contains("TELEFON") || activity.Text.ToUpper().Contains("ADRES"))
                             {
@@ -2947,51 +3202,51 @@ namespace GksKatowiceBot
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
 
-                           //     message.ChannelData = JObject.FromObject(new
-                           //     {
-                           //         notification_type = "REGULAR",
-                           //         //buttons = new dynamic[]
-                           //         // {
-                           //         //     new
-                           //         //     {
-                           //         //    type ="postback",
-                           //         //    title="Tytul",
-                           //         //    vslue = "tytul",
-                           //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                           //         //     }
-                           //         // },
-                           //         quick_replies = new dynamic[]
-                           //     {
-                           //     //new
-                           //     //{
-                           //     //    content_type = "text",
-                           //     //    title = "Aktualności",
-                           //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                           //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                           //     //},
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Piłka nożna",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                           //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                           //     },
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Siatkówka",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                           ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                           //     },                                new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Hokej",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                           //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //     },
-                           //                                    }
-                           //     });
+                                //     message.ChannelData = JObject.FromObject(new
+                                //     {
+                                //         notification_type = "REGULAR",
+                                //         //buttons = new dynamic[]
+                                //         // {
+                                //         //     new
+                                //         //     {
+                                //         //    type ="postback",
+                                //         //    title="Tytul",
+                                //         //    vslue = "tytul",
+                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                //         //     }
+                                //         // },
+                                //         quick_replies = new dynamic[]
+                                //     {
+                                //     //new
+                                //     //{
+                                //     //    content_type = "text",
+                                //     //    title = "Aktualności",
+                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
+                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
+                                //     //},
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Piłka nożna",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
+                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                //     },
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Siatkówka",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
+                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                //     },                                new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Hokej",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
+                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //     },
+                                //                                    }
+                                //     });
 
 
                                 message.From = botAccount;
@@ -3000,7 +3255,7 @@ namespace GksKatowiceBot
                                 message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
                                 List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
                                 message.Text = "";
-                                message.Attachments = Helpers.BaseGETMethod.GetCardsAttachmentsExtra(ref hrefList, true, "http://gkskatowice.eu/page/kontakt","Kontakt");
+                                message.Attachments = Helpers.BaseGETMethod.GetCardsAttachmentsExtra(ref hrefList, true, "http://gkskatowice.eu/page/kontakt", "Kontakt");
 
                                 await connector.Conversations.SendToConversationAsync((Activity)message);
                             }
@@ -3230,7 +3485,7 @@ namespace GksKatowiceBot
                                 await connector.Conversations.SendToConversationAsync((Activity)message);
                             }
 
-                         
+
                             else if (activity.Text.ToUpper().Contains("AUTOGRAFY") || activity.Text.ToUpper().Contains("FANKARTY") || activity.Text.ToUpper().Contains("FAN KARTY") || activity.Text.ToUpper().Contains("KARTY ZAWODNIKÓW"))
                             {
                                 Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
@@ -3248,51 +3503,51 @@ namespace GksKatowiceBot
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
 
-                           //     message.ChannelData = JObject.FromObject(new
-                           //     {
-                           //         notification_type = "REGULAR",
-                           //         //buttons = new dynamic[]
-                           //         // {
-                           //         //     new
-                           //         //     {
-                           //         //    type ="postback",
-                           //         //    title="Tytul",
-                           //         //    vslue = "tytul",
-                           //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                           //         //     }
-                           //         // },
-                           //         quick_replies = new dynamic[]
-                           //     {
-                           //     //new
-                           //     //{
-                           //     //    content_type = "text",
-                           //     //    title = "Aktualności",
-                           //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                           //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                           //     //},
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Piłka nożna",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                           //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                           //     },
-                           //     new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Siatkówka",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                           ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                           //     },                                new
-                           //     {
-                           //         content_type = "text",
-                           //         title = "Hokej",
-                           //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                           //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                           //     },
-                           //                                    }
-                           //     });
+                                //     message.ChannelData = JObject.FromObject(new
+                                //     {
+                                //         notification_type = "REGULAR",
+                                //         //buttons = new dynamic[]
+                                //         // {
+                                //         //     new
+                                //         //     {
+                                //         //    type ="postback",
+                                //         //    title="Tytul",
+                                //         //    vslue = "tytul",
+                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                //         //     }
+                                //         // },
+                                //         quick_replies = new dynamic[]
+                                //     {
+                                //     //new
+                                //     //{
+                                //     //    content_type = "text",
+                                //     //    title = "Aktualności",
+                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
+                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
+                                //     //},
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Piłka nożna",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
+                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                //     },
+                                //     new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Siatkówka",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
+                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                //     },                                new
+                                //     {
+                                //         content_type = "text",
+                                //         title = "Hokej",
+                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
+                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                                //     },
+                                //                                    }
+                                //     });
 
 
                                 message.From = botAccount;
@@ -3401,14 +3656,14 @@ namespace GksKatowiceBot
             return response;
         }
 
-        public async static void CreateMessage(IList<Attachment> foto,string wiadomosc,string fromId)
+        public async static void CreateMessage(IList<Attachment> foto, string wiadomosc, string fromId)
         {
             try
             {
                 BaseDB.AddToLog("Wywołanie metody CreateMessage");
 
                 string uzytkownik = "";
-                DataTable dt = BaseGETMethod.GetUser();
+                DataTable dt = BaseGETMethod.GetUser(1);
 
                 try
                 {
@@ -3445,7 +3700,7 @@ namespace GksKatowiceBot
 
                     message.AttachmentLayout = null;
 
-                    if (foto!=null && foto.Count > 0)
+                    if (foto != null && foto.Count > 0)
                     {
                         string filename = foto[0].ContentUrl.Substring(foto[0].ContentUrl.Length - 4, 3).Replace(".", "");
 
@@ -3456,8 +3711,8 @@ namespace GksKatowiceBot
 
                         message.Attachments = foto;
                     }
-                    
-                    
+
+
                     //var list = new List<Attachment>();
                     //if (foto != null)
                     //{
@@ -3472,11 +3727,11 @@ namespace GksKatowiceBot
                     //}
 
                     message.Text = wiadomosc;
-                    int i= 0;
+                    int i = 0;
                     while (i <= dt.Rows.Count)
                     {
                         var listaUzytkownikow = dt.AsEnumerable().Skip(i).Take(50).ToList();
-                        SednMessage(listaUzytkownikow,message,fromId);
+                        SednMessage(listaUzytkownikow, message, fromId);
                         i += 50;
                     }
                 }
@@ -3492,9 +3747,84 @@ namespace GksKatowiceBot
         }
 
 
-        public async static void SednMessage(List<DataRow> dt, IMessageActivity message,string fromId)
+
+        public async static void CreateMessagePowiadomienia(string fromId)
         {
-            foreach(DataRow dr in dt)
+            try
+            {
+                BaseDB.AddToLog("Wywołanie metody CreateMessage");
+
+                string uzytkownik = "";
+                DataTable dt = BaseGETMethod.GetUser(4);
+
+                try
+                {
+                    MicrosoftAppCredentials.TrustServiceUrl(@"https://facebook.botframework.com", DateTime.MaxValue);
+
+                    IMessageActivity message = Activity.CreateMessageActivity();
+                    message.ChannelData = JObject.FromObject(new
+                    {
+                        notification_type = "REGULAR",
+                        quick_replies = new dynamic[]
+                            {
+                                                                                                               new
+                                {
+                                    content_type = "text",
+                                    title = "Codziennie",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaCodziennie",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
+                                                                                        new
+                                {
+                                    content_type = "text",
+                                    title = "Trzy razy w tygodniu",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_Powiadomienia3WTygodniu",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
+                                                                                                               new
+                                {
+                                    content_type = "text",
+                                    title = "Raz w tygodniu",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaRazWTygodniu",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
+                                                                                                new
+                                {
+                                    content_type = "text",
+                                    title = "Wyłącz powiadomienia",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaWylacz",
+                                   //   image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },
+                                                           }
+                    });
+
+                    message.AttachmentLayout = null;
+
+
+                        message.Attachments = BaseGETMethod.GetCardsAttachmentsFotoPowiadomienia();
+
+                    int i = 0;
+                    while (i <= dt.Rows.Count)
+                    {
+                        var listaUzytkownikow = dt.AsEnumerable().Skip(i).Take(50).ToList();
+                        SednMessage(listaUzytkownikow, message, fromId);
+                        i += 50;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                BaseDB.AddToLog("Błąd wysłania wiadomosci: " + ex.ToString());
+            }
+        }
+
+        public async static void SednMessage(List<DataRow> dt, IMessageActivity message, string fromId)
+        {
+            foreach (DataRow dr in dt)
             {
                 string uzytkownik = "";
                 try
@@ -3503,7 +3833,7 @@ namespace GksKatowiceBot
                     {
                         var userAccount = new ChannelAccount(name: dr["UserName"].ToString(), id: dr["UserId"].ToString());
                         uzytkownik = userAccount.Name;
-                        var botAccount = new ChannelAccount(name: dr["BotName"].ToString(), id:dr["BotId"].ToString());
+                        var botAccount = new ChannelAccount(name: dr["BotName"].ToString(), id: dr["BotId"].ToString());
                         var connector = new ConnectorClient(new Uri(dr["Url"].ToString()), "73267226-823f-46b0-8303-2e866165a3b2", "k6XBDCgzL5452YDhS3PPLsL");
                         var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                         message.From = botAccount;
@@ -3574,10 +3904,10 @@ namespace GksKatowiceBot
         }
 
 
-     
 
 
 
-     
+
+
     }
 }

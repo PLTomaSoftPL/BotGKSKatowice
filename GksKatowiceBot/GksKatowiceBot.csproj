@@ -132,6 +132,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\BaseGETMethod.cs" />
+    <Compile Include="Helpers\ClassHelper.cs" />
     <Compile Include="Parameters.cs" />
     <Compile Include="Helpers\BaseDB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

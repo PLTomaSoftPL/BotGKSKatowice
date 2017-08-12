@@ -25,8 +25,6 @@ namespace GksKatowiceBot.Controllers
 
                 if (items.Count > 0)
                 {
-                    try
-                    {
                         MicrosoftAppCredentials.TrustServiceUrl(@"https://facebook.botframework.com", DateTime.MaxValue);
 
                         IMessageActivity message = Activity.CreateMessageActivity();
@@ -79,7 +77,7 @@ namespace GksKatowiceBot.Controllers
                             }
                             catch (Exception ex)
                             {
-                                BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
+                               // BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
                                 drDrugaProba.Add(dr);
 
                             }
@@ -102,7 +100,7 @@ namespace GksKatowiceBot.Controllers
                             }
                             catch (Exception ex)
                             {
-                                BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
+                                //BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
                                 drtrzeciaProba.Add(dr);
                             }
                         }
@@ -124,20 +122,15 @@ namespace GksKatowiceBot.Controllers
                             }
                             catch (Exception ex)
                             {
-                                BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
-                                BaseDB.DeleteUser(uzytkownikId);
+                                BaseDB.AddToLog("Błąd wysyłania wiadomości (próba trzecia) do: " + uzytkownik + " " + ex.Message.ToString());
+                                BaseDB.ChangeNotification(uzytkownikId.ToString(),4);
                             }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        BaseDB.AddToLog("Błąd wysyłania wiadomości do: " + uzytkownik + " " + ex.ToString());
-                    }
                 }
             }
             catch (Exception ex)
             {
-                BaseDB.AddToLog("Błąd wysłania wiadomosci: " + ex.ToString());
+                BaseDB.AddToLog("Błąd wysłania wiadomosci: " + ex.Message.ToString());
             }
         }
     }

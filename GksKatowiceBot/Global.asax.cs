@@ -31,7 +31,21 @@ namespace GksKatowiceBot
             if (DateTime.UtcNow.Hour == 16 && (DateTime.UtcNow.Minute > 0 && DateTime.UtcNow.Minute <= 3))
             {
                 Helpers.BaseDB.AddToLog("Wywołanie metody SendThreadMessage");
-                DataTable dt = BaseGETMethod.GetUser();
+
+                DataTable dt = new DataTable();
+
+                if (DateTime.Now.DayOfWeek == DayOfWeek.Monday)
+                {
+                    dt = BaseGETMethod.GetUser(3);
+                }
+                else if (DateTime.Now.DayOfWeek == DayOfWeek.Wednesday || DateTime.Now.DayOfWeek == DayOfWeek.Saturday)
+                {
+                    dt = BaseGETMethod.GetUser(2);
+                }
+                else
+                {
+                    dt = BaseGETMethod.GetUser(1);
+                }
 
                 List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
                 List<IGrouping<string, string>> hrefList2 = new List<IGrouping<string, string>>();

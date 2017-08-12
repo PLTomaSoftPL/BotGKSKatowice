@@ -882,6 +882,24 @@ namespace GksKatowiceBot.Helpers
             return list;
         }
 
+        public static IList<Attachment> GetCardsAttachmentsFotoPowiadomienia()
+        {
+            List<Attachment> list = new List<Attachment>();
+            // list.Add(GetHeroCard(
+            // "", "", "",
+            //new CardImage(url: "http://tomasoft.pl/pub/GKSKatowice/przeklenstwo.jpg"),
+            //null,null)
+            //            // new CardAction(ActionTypes.OpenUrl, "Udostępnij", value: "https://www.facebook.com/sharer/sharer.php?u=" + link))
+            //             );
+            list.Add(new Attachment()
+            {
+                ContentUrl = "http://tomasoft.pl/pub/GKSKatowice/przeklenstwo.jpg",
+                ContentType = "image/jpg",
+                Name = "bott.jpg"
+            });
+            return list;
+        }
+
         public static IList<Attachment> GetCardsAttachmentsPowitanie()
         {
             List<Attachment> list = new List<Attachment>();
@@ -1350,7 +1368,7 @@ new CardAction(ActionTypes.OpenUrl, "Udostępnij", value: "https://www.facebook.
                 return null;
             }
         }
-        public static DataTable GetUser()
+        public static DataTable GetUser(byte typ)
         {
             DataTable dt = new DataTable();
 
@@ -1358,15 +1376,20 @@ new CardAction(ActionTypes.OpenUrl, "Udostępnij", value: "https://www.facebook.
             {
                 SqlConnection sqlConnection1 = new SqlConnection("Server=tcp:plps.database.windows.net,1433;Initial Catalog=PLPS;Persist Security Info=False;User ID=tomasoft;Password=Tomason18,;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
                 SqlCommand cmd = new SqlCommand();
+                SqlDataReader reader;
 
-                cmd.CommandText = "SELECT * FROM [dbo].[UserGKSKatowice] where flgDeleted=0";
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "DajUzytkownikowDoWyslania";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@typPowiadomienia",typ);
                 cmd.Connection = sqlConnection1;
 
                 sqlConnection1.Open();
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
+                // this will query your database and return the result to your datatable
                 da.Fill(dt);
+
                 sqlConnection1.Close();
+
                 return dt;
             }
             catch

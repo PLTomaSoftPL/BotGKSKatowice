@@ -32,7 +32,7 @@ namespace GksKatowiceBot.Helpers
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
 
-                cmd.CommandText = "INSERT INTO LogGKSKatowice (Tresc) VALUES ('" + "Błąd dodawania wiadomosci do Loga" + " " + DateTime.Now.ToString() + "')";
+                cmd.CommandText = "INSERT INTO LogGKSKatowice (Tresc) VALUES ('" + "Błąd dodawania wiadomosci do Loga" + " " + DateTime.Now.ToString() +" "+ex.Message.ToString()+ "')";
                 cmd.CommandType = CommandType.Text;
                 cmd.Connection = sqlConnection1;
 
@@ -192,20 +192,23 @@ namespace GksKatowiceBot.Helpers
                 SqlConnection sqlConnection1 = new SqlConnection("Server=tcp:plps.database.windows.net,1433;Initial Catalog=PLPS;Persist Security Info=False;User ID=tomasoft;Password=Tomason18,;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
+                DataTable dt = new DataTable();
 
-                cmd.CommandText = "sprawdzCzyPowiadomieniaGKSKatowice";
+                cmd.CommandText = "DajPowiadomieniaUzytkownika";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@userId", UserId);
                 cmd.Connection = sqlConnection1;
 
                 sqlConnection1.Open();
-                var rowsAffected = cmd.ExecuteScalar();
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                // this will query your database and return the result to your datatable
+                da.Fill(dt);
 
                 sqlConnection1.Close();
 
-                if (rowsAffected != null)
+                if (dt.Rows.Count>0)
                 {
-                    returnValue = 1;
+                    returnValue = Convert.ToByte(dt.Rows[0][0]);
                 }
                 else
                 {
@@ -256,26 +259,33 @@ namespace GksKatowiceBot.Helpers
             }
         }
 
-        public static void ChangeNotification(string id, byte tryb)
+        public static byte ChangeNotification(string id, byte tryb)
         {
+            byte returnValue = 0;
             try
             {
                 SqlConnection sqlConnection1 = new SqlConnection("Server=tcp:plps.database.windows.net,1433;Initial Catalog=PLPS;Persist Security Info=False;User ID=tomasoft;Password=Tomason18,;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
 
-                cmd.CommandText = "Update [dbo].[UserGKSKatowice] SET flgDeleted = " + tryb + " where UserId=" + "'" + id + "'";
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "UstawPowiadomieniaUzytkownika";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@userId", id);
+                cmd.Parameters.AddWithValue("@typPowiadomienia", tryb);
                 cmd.Connection = sqlConnection1;
 
                 sqlConnection1.Open();
-                cmd.ExecuteNonQuery();
+                var rowsAffected = cmd.ExecuteScalar();
 
                 sqlConnection1.Close();
+
+                return 1;
             }
+
             catch (Exception ex)
             {
                 AddToLog("Błąd aktualizacji powiadomień: " + ex.ToString());
+                return 0;
             }
         }
     }
