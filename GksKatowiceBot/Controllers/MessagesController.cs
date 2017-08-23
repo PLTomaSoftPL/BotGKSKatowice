@@ -392,15 +392,16 @@ namespace GksKatowiceBot
                             message.From = botAccount;
                             message.Recipient = userAccount;
                             message.Conversation = new ConversationAccount(id: conversationId.Id);
-                            message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                            message.AttachmentLayout = AttachmentLayoutTypes.List;
                             message.Attachments = BaseGETMethod.GetCardsAttachmentsPowitanie();
                             List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
 
+                            message.Text = @"Jestem Twoim asystentem do kontaktu z GKS-em Katowice. Co jakiś czas powiadomię Cię o tym, co dzieje się w Klubie.";
                             await connector.Conversations.SendToConversationAsync((Activity)message);
                             message.Attachments = null;
 
-                            message.Text = @"Jestem Twoim asystentem do kontaktu z GKS-em Katowice. Co jakiś czas powiadomię Cię o tym, co dzieje się w Klubie..   
-";
+                            Thread.Sleep(500);
+
                             // message.Attachments = GetCardsAttachments(ref hrefList, true);
 
                             await connector.Conversations.SendToConversationAsync((Activity)message);
@@ -754,13 +755,6 @@ namespace GksKatowiceBot
                                 // },
                                 quick_replies = new dynamic[]
                             {
-                                //new
-                                //{
-                                //    content_type = "text",
-                                //    title = "Aktualności",
-                                //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                                //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                                //},
                                 new
                                 {
                                     content_type = "text",
@@ -817,32 +811,13 @@ namespace GksKatowiceBot
                             message.ChannelData = JObject.FromObject(new
                             {
                                 notification_type = "REGULAR",
-                                //buttons = new dynamic[]
-                                // {
-                                //     new
-                                //     {
-                                //    type ="postback",
-                                //    title="Tytul",
-                                //    vslue = "tytul",
-                                //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                                //     }
-                                // },
                                 quick_replies = new dynamic[]
                             {
-                                //new
-                                //{
-                                //    content_type = "text",
-                                //    title = "Aktualności",
-                                //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                                //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                                //},
                                 new
                                 {
                                     content_type = "text",
                                     title = "Aktualności",
                                     payload = "DEVELOPER_DEFINED_PAYLOAD_HokejAktualnosci",
-                                    //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //    image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
                                 },
                                 new
                                 {
@@ -3571,7 +3546,7 @@ namespace GksKatowiceBot
                                 userStruct.botId = activity.Recipient.Id;
                                 userStruct.ServiceUrl = activity.ServiceUrl;
 
-                                BaseDB.AddToLog("UserName: " + userStruct.userName + " User Id: " + userStruct.userId + " BOtId: " + userStruct.botId + " BotName: " + userStruct.botName + " url: " + userStruct.ServiceUrl);
+                             //   BaseDB.AddToLog("UserName: " + userStruct.userName + " User Id: " + userStruct.userId + " BOtId: " + userStruct.botId + " BotName: " + userStruct.botName + " url: " + userStruct.ServiceUrl);
                                 BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
 
                                 Parameters.Parameters.listaAdresow.Add(userStruct);

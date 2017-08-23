@@ -47,6 +47,8 @@ namespace GksKatowiceBot
                     dt = BaseGETMethod.GetUser(1);
                 }
 
+                Helpers.BaseDB.AddToLog("Liczba pobranych użytkowników do wysłania: " + dt.Rows.Count);
+
                 List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
                 List<IGrouping<string, string>> hrefList2 = new List<IGrouping<string, string>>();
                 List<IGrouping<string, string>> hreflist3 = new List<IGrouping<string, string>>();

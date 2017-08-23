@@ -123,7 +123,7 @@ namespace GksKatowiceBot.Controllers
                             catch (Exception ex)
                             {
                                 BaseDB.AddToLog("Błąd wysyłania wiadomości (próba trzecia) do: " + uzytkownik + " " + ex.Message.ToString());
-                                BaseDB.ChangeNotification(uzytkownikId.ToString(),4);
+                                BaseDB.ChangeNotification(uzytkownikId.ToString(),5);
                             }
                         }
                 }

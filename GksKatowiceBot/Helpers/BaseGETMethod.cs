@@ -893,9 +893,9 @@ namespace GksKatowiceBot.Helpers
             //             );
             list.Add(new Attachment()
             {
-                ContentUrl = "http://tomasoft.pl/pub/GKSKatowice/przeklenstwo.jpg",
+                ContentUrl = "http://tomasoft.pl/pub/GKSKatowice/powiadomienia.jpg",
                 ContentType = "image/jpg",
-                Name = "bott.jpg"
+                Name = "powiadomienia.jpg"
             });
             return list;
         }
