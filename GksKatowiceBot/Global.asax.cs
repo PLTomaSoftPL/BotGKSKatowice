@@ -106,9 +106,9 @@ namespace GksKatowiceBot
                 int i= 0;
                 while (i <= dt.Rows.Count)
                 {
-                    var listaUzytkownikow = dt.AsEnumerable().Skip(i).Take(20).ToList();
+                    var listaUzytkownikow = dt.AsEnumerable().Skip(i).Take(100).ToList();
                     Controllers.ThreadClass.SendThreadMessage(listaUzytkownikow, items);
-                    i += 20;
+                    i += 100;
                 }
 
                 BaseDB.AddWiadomoscPilka(hreflist3);
