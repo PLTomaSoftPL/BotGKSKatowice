@@ -104,7 +104,7 @@ namespace GksKatowiceBot
                             userStruct.botId = activity.Recipient.Id;
                             userStruct.ServiceUrl = activity.ServiceUrl;
 
-                            //     BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
+                            //        BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
 
                             Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
@@ -159,6 +159,8 @@ namespace GksKatowiceBot
                                 },
                                                                        }
                             });
+
+
                             message.From = botAccount;
                             message.Recipient = userAccount;
                             message.Conversation = new ConversationAccount(id: conversationId.Id);

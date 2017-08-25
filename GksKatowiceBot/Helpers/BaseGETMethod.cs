@@ -20,7 +20,7 @@ namespace GksKatowiceBot.Helpers
         {
             List<Attachment> list = new List<Attachment>();
 
-            string urlAddress = "http://www.hokej.gkskatowice.eu/index";
+            string urlAddress = "http://hokej.gkskatowice.eu/index";
             // string urlAddress = "http://www.orlenliga.pl/";
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
@@ -156,7 +156,7 @@ namespace GksKatowiceBot.Helpers
                     {
                         list.Add(GetHeroCard(
                         titleList[i].Replace("&quot;", ""), "", "",
-                        new CardImage(url: "http://www.hokej.gkskatowice.eu" + imgList[i]),
+                        new CardImage(url: "http://hokej.gkskatowice.eu" + imgList[i]),
                         new CardAction(ActionTypes.OpenUrl, "Więcej", value: link),
                         new CardAction(ActionTypes.OpenUrl, "Udostępnij", value: "https://www.facebook.com/sharer/sharer.php?u=" + link))
                         );
