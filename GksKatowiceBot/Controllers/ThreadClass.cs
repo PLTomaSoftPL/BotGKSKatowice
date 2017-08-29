@@ -13,6 +13,9 @@ namespace GksKatowiceBot.Controllers
     {
         public async static void SendThreadMessage(List<DataRow> dt, IList<Attachment> items)
         {
+
+            string uzytkownik = "";
+            Int64 uzytkownikId = 0;
             try
             {
 
@@ -20,8 +23,6 @@ namespace GksKatowiceBot.Controllers
                 List<DataRow> drtrzeciaProba = new List<DataRow>();
 
 
-                string uzytkownik = "";
-                Int64 uzytkownikId = 0;
 
                 if (items.Count > 0)
                 {
@@ -73,7 +74,6 @@ namespace GksKatowiceBot.Controllers
                             message.Recipient = userAccount;
                             message.Conversation = new ConversationAccount(id: conversationId.Id, isGroup: false);
                             await connector.Conversations.SendToConversationAsync((Activity)message).ConfigureAwait(false);
-                            BaseDB.AddToLog("Wysłano wiadomość do użytkownika: " + userAccount.Name);
 
                         }
                         catch (Exception ex)
@@ -97,7 +97,6 @@ namespace GksKatowiceBot.Controllers
                             message.Recipient = userAccount;
                             message.Conversation = new ConversationAccount(id: conversationId.Id, isGroup: false);
                             await connector.Conversations.SendToConversationAsync((Activity)message).ConfigureAwait(true);
-                            BaseDB.AddToLog("Wysłano wiadomość do użytkownika: " + userAccount.Name);
 
                         }
                         catch (Exception ex)
@@ -120,21 +119,19 @@ namespace GksKatowiceBot.Controllers
                             message.Recipient = userAccount;
                             message.Conversation = new ConversationAccount(id: conversationId.Id, isGroup: false);
                             await connector.Conversations.SendToConversationAsync((Activity)message).ConfigureAwait(true);
-                            BaseDB.AddToLog("Wysłano wiadomość do użytkownika: " + userAccount.Name);
-
                         }
                         catch (Exception ex)
                         {
-                            BaseDB.AddToLog("Błąd wysyłania wiadomości (próba trzecia) do: " + uzytkownik + " " + ex.Message.ToString());
+                         //   BaseDB.AddToLog("Błąd wysyłania wiadomości (próba trzecia) do: " + uzytkownik + " " + ex.Message.ToString());
                             BaseDB.ChangeNotification(uzytkownikId.ToString(), 5);
                         }
                     }
-                    BaseDB.AddToLog("Zakończenie wątku ");
+                  //  BaseDB.AddToLog("Zakończenie wątku ");
                 }
             }
             catch (Exception ex)
             {
-                BaseDB.AddToLog("Błąd wysłania wiadomosci: " + ex.Message.ToString());
+                BaseDB.AddToLog("Błąd wysłania wiadomosci do "+uzytkownik+" " + ex.Message.ToString());
             }
         }
     }

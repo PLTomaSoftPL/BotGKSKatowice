@@ -129,7 +129,7 @@ namespace GksKatowiceBot.Helpers
                     }
                     else
                     {
-                        link = "http://www.hokej.gkskatowice.eu" + hrefList[i].Key;
+                        link = "http://hokej.gkskatowice.eu" + hrefList[i].Key;
                         //link = "http://www.orlenliga.pl/" + hrefList[i].Key;
                     }
 

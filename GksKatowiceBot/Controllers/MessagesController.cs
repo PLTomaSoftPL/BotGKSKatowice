@@ -32,6 +32,8 @@ namespace GksKatowiceBot
                 if (activity.Type == ActivityTypes.Message)
                 {
 
+                    var state = activity.GetStateClient();
+                    var state_ = state.BotState.GetUserData(activity.ChannelId, activity.From.Id);
                     if (BaseDB.czyAdministrator(activity.From.Id) != null && (((activity.Text != null && activity.Text.IndexOf("!!!") == 0) || (activity.Attachments != null && activity.Attachments.Count > 0))))
                     {
                         WebClient client = new WebClient();
@@ -97,16 +99,6 @@ namespace GksKatowiceBot
 
                         if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Hokej" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_Hokej" || activity.Text.ToLower() == "hokej")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            //        BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -173,16 +165,6 @@ namespace GksKatowiceBot
                         else
                             if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna" || activity.Text.ToLower() == "piłka nożna" || activity.Text.ToLower() == "pilka nozna")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            //        BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -253,16 +235,6 @@ namespace GksKatowiceBot
                         else
                                 if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Siatkowka" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_Siatkowka" || activity.Text.ToLower() == "siatkowka" || activity.Text.ToLower() == "siatkówka")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            //     BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -342,7 +314,6 @@ namespace GksKatowiceBot
 
                             BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
 
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -404,17 +375,17 @@ namespace GksKatowiceBot
                             message.Attachments = BaseGETMethod.GetCardsAttachmentsPowitanie();
                             List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
 
-                            message.Text = @"Jestem Twoim asystentem do kontaktu z GKS-em Katowice. Co jakiś czas powiadomię Cię o tym, co dzieje się w Klubie.";
+                       
                             await connector.Conversations.SendToConversationAsync((Activity)message);
                             message.Attachments = null;
-
+                            message.Text = @"Jestem Twoim asystentem do kontaktu z GKS-em Katowice. Co jakiś czas powiadomię Cię o tym, co dzieje się w Klubie.";
                             Thread.Sleep(500);
 
                             // message.Attachments = GetCardsAttachments(ref hrefList, true);
 
                             await connector.Conversations.SendToConversationAsync((Activity)message);
 
-                            message.Text = @"Współpraca między nami jest bardzo prosta. Wydajesz mi polecenia, a ja za Ciebie wykonuję całą robotę. Zaznacz tylko w rozwijanym menu lub skorzystaj z podpowiedzi co dokładnie Cię interesuje, a ja automatycznie połączę Cię z aktualnościami.
+                            message.Text = @"Współpraca między nami jest bardzo prosta. Wydajesz mi polecenia, a ja za Ciebie wykonuję całą robotę. Zaznacz tylko w rozwijanym menu lub skorzystaj z podpowiedzi co dokładnie Cię interesuje, a ja automatycznie połączę Cię z aktualnościami. Jeżeli nie chcesz dłużej korzystać z mojej pomocy wyślij wiadomość STOP.
 ";
 
                             await connector.Conversations.SendToConversationAsync((Activity)message);
@@ -422,14 +393,6 @@ namespace GksKatowiceBot
                         else
                                     if (activity.Text == "DEVELOPER_DEFINED_PAYLOAD_HELP")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -487,20 +450,21 @@ namespace GksKatowiceBot
                             message.From = botAccount;
                             message.Recipient = userAccount;
                             message.Conversation = new ConversationAccount(id: conversationId.Id);
-                            message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                            message.AttachmentLayout = AttachmentLayoutTypes.List;
                             message.Attachments = BaseGETMethod.GetCardsAttachmentsPowitanie();
                             List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
 
+
                             await connector.Conversations.SendToConversationAsync((Activity)message);
                             message.Attachments = null;
+                            message.Text = @"Jestem Twoim asystentem do kontaktu z GKS-em Katowice. Co jakiś czas powiadomię Cię o tym, co dzieje się w Klubie.";
+                            Thread.Sleep(500);
 
-                            message.Text = @"Jestem Twoim asystentem do kontaktu z GKS-em Katowice. Co jakiś czas powiadomię Cię o tym, co dzieje się w Klubie.
-";
                             // message.Attachments = GetCardsAttachments(ref hrefList, true);
 
                             await connector.Conversations.SendToConversationAsync((Activity)message);
 
-                            message.Text = @"Współpraca między nami jest bardzo prosta. Wydajesz mi polecenia, a ja za Ciebie wykonuję całą robotę. Zaznacz tylko w rozwijanym menu lub skorzystaj z podpowiedzi co dokładnie Cię interesuje, a ja automatycznie połączę Cię z aktualnościami.
+                            message.Text = @"Współpraca między nami jest bardzo prosta. Wydajesz mi polecenia, a ja za Ciebie wykonuję całą robotę. Zaznacz tylko w rozwijanym menu lub skorzystaj z podpowiedzi co dokładnie Cię interesuje, a ja automatycznie połączę Cię z aktualnościami. Jeżeli nie chcesz dłużej korzystać z mojej pomocy wyślij wiadomość STOP.
 ";
 
                             await connector.Conversations.SendToConversationAsync((Activity)message);
@@ -508,14 +472,6 @@ namespace GksKatowiceBot
 
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Pilka_NoznaAktualnosci" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_Pilka_NoznaAktualnosci")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -583,14 +539,6 @@ namespace GksKatowiceBot
                         }
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Pilka_NoznaGaleria")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -658,14 +606,6 @@ namespace GksKatowiceBot
                         }
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Pilka_NoznaVideo")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -733,14 +673,6 @@ namespace GksKatowiceBot
                         }
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_HokejAktualnosci")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -801,14 +733,6 @@ namespace GksKatowiceBot
                         }
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_HokejGaleria")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -857,14 +781,6 @@ namespace GksKatowiceBot
                         }
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_HokejVideo")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -932,14 +848,6 @@ namespace GksKatowiceBot
                         }
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_SiatkowkaAktualnosci")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -1008,17 +916,6 @@ namespace GksKatowiceBot
 
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_POWIADOMIENIA" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_POWIADOMIENIA" || activity.Text == "Powiadomienia")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            // BaseDB.AddToLog("UserName: " + userStruct.userName + " User Id: " + userStruct.userId + " BOtId: " + userStruct.botId + " BotName: " + userStruct.botName + " url: " + userStruct.ServiceUrl);
-                            //BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -1176,7 +1073,7 @@ namespace GksKatowiceBot
            }
                                 });
                             }
-                            else if (czyPowiadomienia == 4)
+                            else if (czyPowiadomienia == 4 || czyPowiadomienia==5)
                             {
                                 message.Text = "Opcja automatycznych, powiadomień o aktualnościach jest wyłączona. Jeśli chcesz otrzymywać powiadomienia możesz je włączyć.";
                                 message.ChannelData = JObject.FromObject(new
@@ -1229,19 +1126,92 @@ namespace GksKatowiceBot
                             await connector.Conversations.SendToConversationAsync((Activity)message);
                         }
 
+
+
+                        else if(activity.Text.ToUpper()=="STOP" || activity.Text.ToUpper()=="KONIEC" || activity.Text.ToUpper()=="ZAKOŃCZ" || activity.Text.ToUpper()=="USUŃ" || activity.Text.ToUpper()=="WYŁĄCZ"
+                             || activity.Text.ToUpper()=="ODŁĄCZ" || activity.Text.ToUpper() == "ODLACZ"|| activity.Text.ToUpper() == "NIE CHCE"|| activity.Text.ToUpper() == "NIE CHCĘ"|| activity.Text.ToUpper()=="KOSZMAR"
+                             || activity.Text.ToUpper()=="NIE CHCĘ"|| activity.Text.ToUpper()=="NIE CHCE"|| activity.Text.ToUpper()=="POWIADOMIENIA"
+                             || activity.Text.ToUpper().Contains("POWIADOMIEŃ") || activity.Text.ToUpper().Contains("POWIADOMIENIAMI")
+                             || activity.Text.ToUpper().Contains("ODŁĄCZCIE"))
+                        {
+                            ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                            var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
+                            var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
+                            connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                            var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
+                            IMessageActivity message = Activity.CreateMessageActivity();
+                            message.ChannelData = JObject.FromObject(new
+                            {
+                                notification_type = "REGULAR",
+                                //buttons = new dynamic[]
+                                // {
+                                //     new
+                                //     {
+                                //    type ="postback",
+                                //    title="Tytul",
+                                //    vslue = "tytul",
+                                //    payload="DEVELOPER_DEFINED_PAYLOAD"
+                                //     }
+                                // },
+                                quick_replies = new dynamic[]
+                            {
+                                //new
+                                //{
+                                //    content_type = "text",
+                                //    title = "Aktualności",
+                                //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
+                                //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
+                                //},
+                                new
+                                {
+                                    content_type = "text",
+                                    title = "Wyłącz BOTa",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_WylaczBota",
+                                    //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
+                            //        image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
+                                },
+                                new
+                                {
+                                    content_type = "text",
+                                    title = "Zarządzaj powiadomieniami",
+                                    payload = "DEVELOPER_DEFINED_PAYLOAD_POWIADOMIENIA",
+                       //             image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
+                                },   
+                                                           }
+                            });
+                            message.From = botAccount;
+                            message.Recipient = userAccount;
+                            message.Conversation = new ConversationAccount(id: conversationId.Id);
+                            message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                            List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
+                            //  message.Attachments = BaseGETMethod.GetCardsAttachmentsNajnowsze(ref hrefList, true);
+                            message.Text = "Wybierz jedną z opcji";
+                            BaseDB.ChangeNotification(userAccount.Id, 1);
+                            await connector.Conversations.SendToConversationAsync((Activity)message);
+                        }
+
+
+                        else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_WylaczBota" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_WylaczBota")
+                        {
+                            ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                            var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
+                            var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
+                            connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                            var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
+                            IMessageActivity message = Activity.CreateMessageActivity();
+                            message.From = botAccount;
+                            message.Recipient = userAccount;
+                            message.Conversation = new ConversationAccount(id: conversationId.Id);
+                            message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                            List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
+                            //  message.Attachments = BaseGETMethod.GetCardsAttachmentsNajnowsze(ref hrefList, true);
+                            message.Text = "BOT został wyłączony.";
+                            BaseDB.ChangeNotification(userAccount.Id, 5);
+                            await connector.Conversations.SendToConversationAsync((Activity)message);
+                        }
+
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaCodziennie" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaCodziennie" || activity.Text == "Wyłącz")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            // BaseDB.AddToLog("UserName: " + userStruct.userName + " User Id: " + userStruct.userId + " BOtId: " + userStruct.botId + " BotName: " + userStruct.botName + " url: " + userStruct.ServiceUrl);
-                            //BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -1306,17 +1276,6 @@ namespace GksKatowiceBot
 
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Powiadomienia3WTygodniu" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_Powiadomienia3WTygodniu" || activity.Text == "Wyłącz")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            // BaseDB.AddToLog("UserName: " + userStruct.userName + " User Id: " + userStruct.userId + " BOtId: " + userStruct.botId + " BotName: " + userStruct.botName + " url: " + userStruct.ServiceUrl);
-                            //BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -1382,17 +1341,6 @@ namespace GksKatowiceBot
 
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaRazWTygodniu" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaRazWTygodniu" || activity.Text == "Wyłącz")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            // BaseDB.AddToLog("UserName: " + userStruct.userName + " User Id: " + userStruct.userId + " BOtId: " + userStruct.botId + " BotName: " + userStruct.botName + " url: " + userStruct.ServiceUrl);
-                            //BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -1456,17 +1404,6 @@ namespace GksKatowiceBot
                         }
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaWylacz" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_PowiadomieniaWylacz" || activity.Text == "Wyłącz")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            // BaseDB.AddToLog("UserName: " + userStruct.userName + " User Id: " + userStruct.userId + " BOtId: " + userStruct.botId + " BotName: " + userStruct.botName + " url: " + userStruct.ServiceUrl);
-                            //BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -1532,14 +1469,6 @@ namespace GksKatowiceBot
 
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_SiatkowkaGaleria")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -1607,14 +1536,6 @@ namespace GksKatowiceBot
                         }
                         else if (komenda == "DEVELOPER_DEFINED_PAYLOAD_SiatkowkaVideo")
                         {
-                            Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                            userStruct.userName = activity.From.Name;
-                            userStruct.userId = activity.From.Id;
-                            userStruct.botName = activity.Recipient.Name;
-                            userStruct.botId = activity.Recipient.Id;
-                            userStruct.ServiceUrl = activity.ServiceUrl;
-
-                            Parameters.Parameters.listaAdresow.Add(userStruct);
                             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                             var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -1685,14 +1606,6 @@ namespace GksKatowiceBot
                         {
                             if (BaseDB.czyPrzeklenstwo(activity.Text) == 1)
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -1759,14 +1672,6 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("KARTA KIBICA"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -1835,14 +1740,6 @@ namespace GksKatowiceBot
 
                             else if (activity.Text.ToUpper().Contains("KIBICE") || activity.Text.ToUpper().Contains("KIBIC") || activity.Text.ToUpper().Contains("FANI"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -1909,14 +1806,6 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("GIEKSIK"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -1983,14 +1872,6 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("SKLEP") || activity.Text.ToUpper().Contains("GADŻETY") || activity.Text.ToUpper().Contains("STREFA GIEKSY"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -2057,14 +1938,6 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("FUCHS"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -2132,14 +2005,6 @@ namespace GksKatowiceBot
 
                             else if (activity.Text.ToUpper().Contains("AASA"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -2207,14 +2072,6 @@ namespace GksKatowiceBot
 
                             else if (activity.Text.ToUpper().Contains("NORD"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -2281,14 +2138,6 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("GTL"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -2355,14 +2204,6 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("FORTUNA"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -2430,14 +2271,6 @@ namespace GksKatowiceBot
 
                             else if (activity.Text.ToUpper().Contains("MŁODA GIEKSA") || activity.Text.ToUpper().Contains("AKADEMIA"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -2504,14 +2337,6 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("KATOWICE") || activity.Text.ToUpper().Contains("MIASTO") || activity.Text.ToUpper().Contains("PREZYDENT") || activity.Text.ToUpper().Contains("MARCIN KRUPA"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -2578,67 +2403,12 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("ZAGRAJ NA BUKOWEJ"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
                                 connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
-
-                                //     message.ChannelData = JObject.FromObject(new
-                                //     {
-                                //         notification_type = "REGULAR",
-                                //         //buttons = new dynamic[]
-                                //         // {
-                                //         //     new
-                                //         //     {
-                                //         //    type ="postback",
-                                //         //    title="Tytul",
-                                //         //    vslue = "tytul",
-                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                                //         //     }
-                                //         // },
-                                //         quick_replies = new dynamic[]
-                                //     {
-                                //     //new
-                                //     //{
-                                //     //    content_type = "text",
-                                //     //    title = "Aktualności",
-                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                                //     //},
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Piłka nożna",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                                //     },
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Siatkówka",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                                //     },                                new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Hokej",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //     },
-                                //                                    }
-                                //     });
-
 
                                 message.From = botAccount;
                                 message.Recipient = userAccount;
@@ -2652,67 +2422,12 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("TAURON"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
                                 connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
-
-                                //     message.ChannelData = JObject.FromObject(new
-                                //     {
-                                //         notification_type = "REGULAR",
-                                //         //buttons = new dynamic[]
-                                //         // {
-                                //         //     new
-                                //         //     {
-                                //         //    type ="postback",
-                                //         //    title="Tytul",
-                                //         //    vslue = "tytul",
-                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                                //         //     }
-                                //         // },
-                                //         quick_replies = new dynamic[]
-                                //     {
-                                //     //new
-                                //     //{
-                                //     //    content_type = "text",
-                                //     //    title = "Aktualności",
-                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                                //     //},
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Piłka nożna",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                                //     },
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Siatkówka",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                                //     },                                new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Hokej",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //     },
-                                //                                    }
-                                //     });
-
 
                                 message.From = botAccount;
                                 message.Recipient = userAccount;
@@ -2726,67 +2441,12 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("BILET") || activity.Text.ToUpper().Contains("BILETY") || activity.Text.ToUpper().Contains("BILECIKI") || activity.Text.ToUpper().Contains("WEJŚCIÓWKI"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
                                 connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
-
-                                //     message.ChannelData = JObject.FromObject(new
-                                //     {
-                                //         notification_type = "REGULAR",
-                                //         //buttons = new dynamic[]
-                                //         // {
-                                //         //     new
-                                //         //     {
-                                //         //    type ="postback",
-                                //         //    title="Tytul",
-                                //         //    vslue = "tytul",
-                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                                //         //     }
-                                //         // },
-                                //         quick_replies = new dynamic[]
-                                //     {
-                                //     //new
-                                //     //{
-                                //     //    content_type = "text",
-                                //     //    title = "Aktualności",
-                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                                //     //},
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Piłka nożna",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                                //     },
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Siatkówka",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                                //     },                                new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Hokej",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //     },
-                                //                                    }
-                                //     });
-
 
                                 message.From = botAccount;
                                 message.Recipient = userAccount;
@@ -2800,67 +2460,12 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("KARNET") || activity.Text.ToUpper().Contains("KARNETY"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
                                 connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
-
-                                //     message.ChannelData = JObject.FromObject(new
-                                //     {
-                                //         notification_type = "REGULAR",
-                                //         //buttons = new dynamic[]
-                                //         // {
-                                //         //     new
-                                //         //     {
-                                //         //    type ="postback",
-                                //         //    title="Tytul",
-                                //         //    vslue = "tytul",
-                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                                //         //     }
-                                //         // },
-                                //         quick_replies = new dynamic[]
-                                //     {
-                                //     //new
-                                //     //{
-                                //     //    content_type = "text",
-                                //     //    title = "Aktualności",
-                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                                //     //},
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Piłka nożna",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                                //     },
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Siatkówka",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                                //     },                                new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Hokej",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //     },
-                                //                                    }
-                                //     });
-
 
                                 message.From = botAccount;
                                 message.Recipient = userAccount;
@@ -2874,68 +2479,12 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("TABELA") || activity.Text.ToUpper().Contains("TERMINARZ") || activity.Text.ToUpper().Contains("WYNIK") || activity.Text.ToUpper().Contains("WYNIKI"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
                                 connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
-
-                                //     message.ChannelData = JObject.FromObject(new
-                                //     {
-                                //         notification_type = "REGULAR",
-                                //         //buttons = new dynamic[]
-                                //         // {
-                                //         //     new
-                                //         //     {
-                                //         //    type ="postback",
-                                //         //    title="Tytul",
-                                //         //    vslue = "tytul",
-                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                                //         //     }
-                                //         // },
-                                //         quick_replies = new dynamic[]
-                                //     {
-                                //     //new
-                                //     //{
-                                //     //    content_type = "text",
-                                //     //    title = "Aktualności",
-                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                                //     //},
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Piłka nożna",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                                //     },
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Siatkówka",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                                //     },                                new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Hokej",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //     },
-                                //                                    }
-                                //     });
-
-
                                 message.From = botAccount;
                                 message.Recipient = userAccount;
                                 message.Conversation = new ConversationAccount(id: conversationId.Id);
@@ -2948,67 +2497,12 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("SKŁAD") || activity.Text.ToUpper().Contains("DRUŻYNA") || activity.Text.ToUpper().Contains("ZESPÓŁ") || activity.Text.ToUpper().Contains("ZAWODNICY"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
                                 connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
-
-                                //     message.ChannelData = JObject.FromObject(new
-                                //     {
-                                //         notification_type = "REGULAR",
-                                //         //buttons = new dynamic[]
-                                //         // {
-                                //         //     new
-                                //         //     {
-                                //         //    type ="postback",
-                                //         //    title="Tytul",
-                                //         //    vslue = "tytul",
-                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                                //         //     }
-                                //         // },
-                                //         quick_replies = new dynamic[]
-                                //     {
-                                //     //new
-                                //     //{
-                                //     //    content_type = "text",
-                                //     //    title = "Aktualności",
-                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                                //     //},
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Piłka nożna",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                                //     },
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Siatkówka",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                                //     },                                new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Hokej",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //     },
-                                //                                    }
-                                //     });
-
 
                                 message.From = botAccount;
                                 message.Recipient = userAccount;
@@ -3022,67 +2516,12 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("ZARZĄD") || activity.Text.ToUpper().Contains("PREZES") || activity.Text.ToUpper().Contains("PREZESI") || activity.Text.ToUpper().Contains("WŁADZE"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
                                 connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
                                 IMessageActivity message = Activity.CreateMessageActivity();
-
-                                //     message.ChannelData = JObject.FromObject(new
-                                //     {
-                                //         notification_type = "REGULAR",
-                                //         //buttons = new dynamic[]
-                                //         // {
-                                //         //     new
-                                //         //     {
-                                //         //    type ="postback",
-                                //         //    title="Tytul",
-                                //         //    vslue = "tytul",
-                                //         //    payload="DEVELOPER_DEFINED_PAYLOAD"
-                                //         //     }
-                                //         // },
-                                //         quick_replies = new dynamic[]
-                                //     {
-                                //     //new
-                                //     //{
-                                //     //    content_type = "text",
-                                //     //    title = "Aktualności",
-                                //     //    payload = "DEFINED_PAYLOAD_FOR_PICKING_BLUE",
-                                //     //    image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Blue%20Ball.png"
-                                //     //},
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Piłka nożna",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Pilka_Nozna",
-                                //         //     image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //        // image_url = "http://archiwum.koluszki.pl/zdjecia/naglowki_nowe/listopad%202013/pi%C5%82ka[1].png"
-                                //     },
-                                //     new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Siatkówka",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Siatkowka",
-                                ////         image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                                //     },                                new
-                                //     {
-                                //         content_type = "text",
-                                //         title = "Hokej",
-                                //         payload = "DEVELOPER_DEFINED_PAYLOAD_Hokej",
-                                //     //       image_url = "https://cdn3.iconfinder.com/data/icons/developperss/PNG/Green%20Ball.png"
-                                //     },
-                                //                                    }
-                                //     });
-
 
                                 message.From = botAccount;
                                 message.Recipient = userAccount;
@@ -3096,14 +2535,6 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("JUNIORZY") || activity.Text.ToUpper().Contains("AKADEMIA") || activity.Text.ToUpper().Contains("MŁODZIEŻ") || activity.Text.ToUpper().Contains("MŁODA GIEKSA"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -3170,14 +2601,6 @@ namespace GksKatowiceBot
                             }
                             else if (activity.Text.ToUpper().Contains("KONTAKT") || activity.Text.ToUpper().Contains("TELEFON") || activity.Text.ToUpper().Contains("ADRES"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -3245,14 +2668,6 @@ namespace GksKatowiceBot
 
                             else if (activity.Text.ToUpper().Contains("SZACHY"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -3320,14 +2735,6 @@ namespace GksKatowiceBot
 
                             else if (activity.Text.ToUpper().Contains("PIŁKARKI") || activity.Text.ToUpper().Contains("KOBIETY") || activity.Text.ToUpper().Contains("ŻEŃSKI"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -3395,14 +2802,6 @@ namespace GksKatowiceBot
 
                             else if (activity.Text.ToUpper().Contains("GALERIA LIBERO") || activity.Text.ToUpper().Contains("LIBER"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -3471,14 +2870,6 @@ namespace GksKatowiceBot
 
                             else if (activity.Text.ToUpper().Contains("AUTOGRAFY") || activity.Text.ToUpper().Contains("FANKARTY") || activity.Text.ToUpper().Contains("FAN KARTY") || activity.Text.ToUpper().Contains("KARTY ZAWODNIKÓW"))
                             {
-                                Parameters.Parameters.userDataStruct userStruct = new Parameters.Parameters.userDataStruct();
-                                userStruct.userName = activity.From.Name;
-                                userStruct.userId = activity.From.Id;
-                                userStruct.botName = activity.Recipient.Name;
-                                userStruct.botId = activity.Recipient.Id;
-                                userStruct.ServiceUrl = activity.ServiceUrl;
-
-                                Parameters.Parameters.listaAdresow.Add(userStruct);
                                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                                 var userAccount = new ChannelAccount(name: activity.From.Name, id: activity.From.Id);
                                 var botAccount = new ChannelAccount(name: activity.Recipient.Name, id: activity.Recipient.Id);
@@ -3860,7 +3251,8 @@ namespace GksKatowiceBot
         {
             if (message.Type == ActivityTypes.DeleteUserData)
             {
-                BaseDB.DeleteUser(Convert.ToInt64(message.From.Id));
+                BaseDB.ChangeNotification(message.From.Id,5);
+                BaseDB.AddToLog("DeleteUserData");
             }
             else
                 if (message.Type == ActivityTypes.ConversationUpdate)
@@ -3869,6 +3261,7 @@ namespace GksKatowiceBot
             else
                     if (message.Type == ActivityTypes.ContactRelationUpdate)
             {
+                BaseDB.AddToLog("ContactRelationUpdate");
             }
             else
                         if (message.Type == ActivityTypes.Typing)
@@ -3878,10 +3271,12 @@ namespace GksKatowiceBot
             else
                             if (message.Type == ActivityTypes.Ping)
             {
+                BaseDB.AddToLog("Ping");
             }
             else
                                 if (message.Type == ActivityTypes.Typing)
             {
+                BaseDB.AddToLog("Typing");
             }
             return null;
         }

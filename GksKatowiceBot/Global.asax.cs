@@ -8,6 +8,7 @@ using System.Timers;
 using GksKatowiceBot.Helpers;
 using Microsoft.Bot.Connector;
 using System.Data;
+using System.Threading;
 
 namespace GksKatowiceBot
 {
@@ -106,11 +107,12 @@ namespace GksKatowiceBot
                 int i= 0;
                 while (i <= dt.Rows.Count)
                 {
-                    var listaUzytkownikow = dt.AsEnumerable().Skip(i).Take(100).ToList();
+                    var listaUzytkownikow = dt.AsEnumerable().Skip(i).Take(50).ToList();
                     Controllers.ThreadClass.SendThreadMessage(listaUzytkownikow, items);
-                    i += 100;
+                    i += 50;
+                    Thread.Sleep(100);
                 }
-
+                BaseDB.AddToLog("Wysyłanie zostało zakończone");
                 BaseDB.AddWiadomoscPilka(hreflist3);
                 BaseDB.AddWiadomoscSiatka(hrefList2);
                 BaseDB.AddWiadomoscHokej(hreflist4);

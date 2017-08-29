@@ -64,6 +64,7 @@ namespace GksKatowiceBot.Helpers
                 cmd.ExecuteNonQuery();
 
                 sqlConnection1.Close();
+                AddToLog("Nowy użytkownik " + UserName);
             }
             catch (Exception ex)
             {
