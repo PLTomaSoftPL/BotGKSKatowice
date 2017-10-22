@@ -64,7 +64,7 @@ namespace GksKatowiceBot.Helpers
                 cmd.ExecuteNonQuery();
 
                 sqlConnection1.Close();
-                AddToLog("Nowy użytkownik " + UserName);
+             //   AddToLog("Nowy użytkownik " + UserName);
             }
             catch (Exception ex)
             {
@@ -255,7 +255,7 @@ namespace GksKatowiceBot.Helpers
             }
             catch (Exception ex)
             {
-                AddToLog("Blad sprawdzania uzytkownika czy admnistrator " + ex.ToString());
+                AddToLog("Blad sprawdzania czy przekleństwo " + ex.ToString());
                 return returnValue;
             }
         }

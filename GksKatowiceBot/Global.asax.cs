@@ -110,7 +110,7 @@ namespace GksKatowiceBot
                     var listaUzytkownikow = dt.AsEnumerable().Skip(i).Take(50).ToList();
                     Controllers.ThreadClass.SendThreadMessage(listaUzytkownikow, items);
                     i += 50;
-                    Thread.Sleep(100);
+                    Thread.Sleep(1000);
                 }
                 BaseDB.AddToLog("Wysyłanie zostało zakończone");
                 BaseDB.AddWiadomoscPilka(hreflist3);

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -887,7 +888,7 @@ namespace GksKatowiceBot.Helpers
             List<Attachment> list = new List<Attachment>();
             // list.Add(GetHeroCard(
             // "", "", "",
-            //new CardImage(url: "http://tomasoft.pl/pub/GKSKatowice/przeklenstwo.jpg"),
+            //new CardImage(url: "http://tomasoft.pl/pub/GKSKatowice/powiadomienia.jpg"),
             //null,null)
             //            // new CardAction(ActionTypes.OpenUrl, "Udostępnij", value: "https://www.facebook.com/sharer/sharer.php?u=" + link))
             //             );
@@ -1367,6 +1368,20 @@ new CardAction(ActionTypes.OpenUrl, "Udostępnij", value: "https://www.facebook.
                 BaseDB.AddToLog("Błąd pobierania wiadomości");
                 return null;
             }
+        }
+
+        public static byte[] ImageToByteArray(Image imageIn)
+        {
+            using (var ms = new MemoryStream())
+            {
+                imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
+                return ms.ToArray();
+            }
+        }
+
+        public static Image resizeImage(Image imgToResize, Size size)
+        {
+            return (Image)(new Bitmap(imgToResize, size));
         }
         public static DataTable GetUser(byte typ)
         {

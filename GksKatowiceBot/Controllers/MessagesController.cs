@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using Parameters;
 using GksKatowiceBot.Helpers;
 using System.Json;
+using System.Drawing;
 
 namespace GksKatowiceBot
 {
@@ -31,42 +32,60 @@ namespace GksKatowiceBot
             {
                 if (activity.Type == ActivityTypes.Message)
                 {
-
-                    var state = activity.GetStateClient();
-                    var state_ = state.BotState.GetUserData(activity.ChannelId, activity.From.Id);
                     if (BaseDB.czyAdministrator(activity.From.Id) != null && (((activity.Text != null && activity.Text.IndexOf("!!!") == 0) || (activity.Attachments != null && activity.Attachments.Count > 0))))
                     {
+                        BaseDB.AddToLog("Administrator");
+                        
                         WebClient client = new WebClient();
 
+                        BaseDB.AddToLog("Utworzono webClient");
+                        //if (activity.Text.ToUpper().Contains("POWIADOMIENIA"))
+                        //{
+                        //    CreateMessagePowiadomienia(activity.From.Id);
+                        //}
 
-                        if (activity.Text.ToUpper().Contains("POWIADOMIENIA"))
-                        {
-                            CreateMessagePowiadomienia(activity.From.Id);
-                        }
+                        //else
+                        //{
 
-                        else
+                        BaseDB.AddToLog(activity.Attachments.ToString());
+                        if (activity.Attachments != null)
                         {
-                            if (activity.Attachments != null)
+                            BaseDB.AddToLog("Wysyłanie wiadomości do wszystkich(załącznik nie jest nullem)");
+                            //Uri uri = new Uri(activity.Attachments[0].ContentUrl);
+                            string filename = activity.Attachments[0].ContentUrl.Substring(activity.Attachments[0].ContentUrl.Length - 4, 3).Replace(".", "");
+
+
+                            //  WebClient client = new WebClient();
+                            client.Credentials = new NetworkCredential("serwer1606926", "Tomason1910");
+                            client.BaseAddress = "ftp://serwer1606926.home.pl/public_html/pub/";
+
+
+                            BaseDB.AddToLog("Wysyłanie wiadomości do wszystkich(poświadczenia ok)");
+                            byte[] data;
+                            using (WebClient client2 = new WebClient())
                             {
-                                //Uri uri = new Uri(activity.Attachments[0].ContentUrl);
-                                string filename = activity.Attachments[0].ContentUrl.Substring(activity.Attachments[0].ContentUrl.Length - 4, 3).Replace(".", "");
-
-
-                                //  WebClient client = new WebClient();
-                                client.Credentials = new NetworkCredential("serwer1606926", "Tomason1910");
-                                client.BaseAddress = "ftp://serwer1606926.home.pl/public_html/pub/";
-
-
-                                byte[] data;
-                                using (WebClient client2 = new WebClient())
-                                {
-                                    data = client2.DownloadData(activity.Attachments[0].ContentUrl);
-                                }
-                                if (activity.Attachments[0].ContentType.Contains("image")) client.UploadData(filename + ".png", data); //since the baseaddress
-                                else if (activity.Attachments[0].ContentType.Contains("video")) client.UploadData(filename + ".mp4", data);
+                                data = client2.DownloadData(activity.Attachments[0].ContentUrl);
+                                BaseDB.AddToLog("Wysyłanie wiadomości do wszystkich(wysyłanie na serwer ftp)");
                             }
-                            CreateMessage(activity.Attachments, activity.Text == null ? "" : activity.Text.Replace("!!!", ""), activity.From.Id);
+                            if (activity.Attachments[0].ContentType.Contains("image"))
+                            {
+                                var ms = new MemoryStream(data);
+                                Image img = Image.FromStream(ms);
+                                img = BaseGETMethod.resizeImage(img, new Size(img.Size.Width/2,img.Size.Height/2));
+                                data = BaseGETMethod.ImageToByteArray(img);
+
+                                client.UploadData(filename + ".png", data);
+                                BaseDB.AddToLog("Wysyłanie wiadomości do wszystkich(foto)");
+                            } //since the baseaddress
+                            else if (activity.Attachments[0].ContentType.Contains("video"))
+                            {
+                                client.UploadData(filename + ".mp4", data);
+                                BaseDB.AddToLog("Wysyłanie wiadomości do wszystkich(video)");
+                            }
                         }
+
+                            CreateMessage(activity.Attachments, activity.Text == null ? "" : activity.Text.Replace("!!!", ""), activity.From.Id);
+                        //}
                     }
                     else
                     {
@@ -75,19 +94,17 @@ namespace GksKatowiceBot
                         {
                             try
                             {
-                                var stuff = JsonConvert.DeserializeObject<ClassHelpers.RootObject>(activity.ChannelData.ToString());
-                                //komenda = stuff.message.quick_reply.payload;
-                     //           BaseDB.AddToLog("Przesłąny json " + activity.ChannelData.ToString());
+                               // BaseDB.AddToLog("Przesylany Json " + activity.ChannelData.ToString());
+                                dynamic stuff = JsonConvert.DeserializeObject(activity.ChannelData.ToString());
                                 komenda = stuff.message.quick_reply.payload;
-
-               //                 BaseDB.AddToLog(komenda);
-
+                            //    BaseDB.AddToLog("Komenda: " + komenda);
                             }
                             catch (Exception ex)
                             {
-
+                             //   BaseDB.AddToLog("Bład rozkładania Jsona " + ex.ToString());
                             }
                         }
+
                         var toReply = activity.CreateReply(String.Empty);
                         var connectorNew = new ConnectorClient(new Uri(activity.ServiceUrl));
                         toReply.Type = ActivityTypes.Typing;
@@ -96,6 +113,7 @@ namespace GksKatowiceBot
 
 
                         MicrosoftAppCredentials.TrustServiceUrl(@"https://facebook.botframework.com", DateTime.MaxValue);
+
 
                         if (komenda == "DEVELOPER_DEFINED_PAYLOAD_Hokej" || activity.Text == "DEVELOPER_DEFINED_PAYLOAD_Hokej" || activity.Text.ToLower() == "hokej")
                         {
@@ -375,7 +393,7 @@ namespace GksKatowiceBot
                             message.Attachments = BaseGETMethod.GetCardsAttachmentsPowitanie();
                             List<IGrouping<string, string>> hrefList = new List<IGrouping<string, string>>();
 
-                       
+
                             await connector.Conversations.SendToConversationAsync((Activity)message);
                             message.Attachments = null;
                             message.Text = @"Jestem Twoim asystentem do kontaktu z GKS-em Katowice. Co jakiś czas powiadomię Cię o tym, co dzieje się w Klubie.";
@@ -1073,7 +1091,7 @@ namespace GksKatowiceBot
            }
                                 });
                             }
-                            else if (czyPowiadomienia == 4 || czyPowiadomienia==5)
+                            else if (czyPowiadomienia == 4 || czyPowiadomienia == 5)
                             {
                                 message.Text = "Opcja automatycznych, powiadomień o aktualnościach jest wyłączona. Jeśli chcesz otrzymywać powiadomienia możesz je włączyć.";
                                 message.ChannelData = JObject.FromObject(new
@@ -1128,9 +1146,9 @@ namespace GksKatowiceBot
 
 
 
-                        else if(activity.Text.ToUpper()=="STOP" || activity.Text.ToUpper()=="KONIEC" || activity.Text.ToUpper()=="ZAKOŃCZ" || activity.Text.ToUpper()=="USUŃ" || activity.Text.ToUpper()=="WYŁĄCZ"
-                             || activity.Text.ToUpper()=="ODŁĄCZ" || activity.Text.ToUpper() == "ODLACZ"|| activity.Text.ToUpper() == "NIE CHCE"|| activity.Text.ToUpper() == "NIE CHCĘ"|| activity.Text.ToUpper()=="KOSZMAR"
-                             || activity.Text.ToUpper()=="NIE CHCĘ"|| activity.Text.ToUpper()=="NIE CHCE"|| activity.Text.ToUpper()=="POWIADOMIENIA"
+                        else if (activity.Text.ToUpper() == "STOP" || activity.Text.ToUpper() == "KONIEC" || activity.Text.ToUpper() == "ZAKOŃCZ" || activity.Text.ToUpper() == "USUŃ" || activity.Text.ToUpper() == "WYŁĄCZ"
+                             || activity.Text.ToUpper() == "ODŁĄCZ" || activity.Text.ToUpper() == "ODLACZ" || activity.Text.ToUpper() == "NIE CHCE" || activity.Text.ToUpper() == "NIE CHCĘ" || activity.Text.ToUpper() == "KOSZMAR"
+                             || activity.Text.ToUpper() == "NIE CHCĘ" || activity.Text.ToUpper() == "NIE CHCE" || activity.Text.ToUpper() == "POWIADOMIENIA"
                              || activity.Text.ToUpper().Contains("POWIADOMIEŃ") || activity.Text.ToUpper().Contains("POWIADOMIENIAMI")
                              || activity.Text.ToUpper().Contains("ODŁĄCZCIE"))
                         {
@@ -1176,7 +1194,7 @@ namespace GksKatowiceBot
                                     title = "Zarządzaj powiadomieniami",
                                     payload = "DEVELOPER_DEFINED_PAYLOAD_POWIADOMIENIA",
                        //             image_url = "https://gim7bytom.edupage.org/global/pics/iconspro/sport/volleyball.png"
-                                },   
+                                },
                                                            }
                             });
                             message.From = botAccount;
@@ -2945,7 +2963,7 @@ namespace GksKatowiceBot
                                 userStruct.botId = activity.Recipient.Id;
                                 userStruct.ServiceUrl = activity.ServiceUrl;
 
-                             //   BaseDB.AddToLog("UserName: " + userStruct.userName + " User Id: " + userStruct.userId + " BOtId: " + userStruct.botId + " BotName: " + userStruct.botName + " url: " + userStruct.ServiceUrl);
+                                //   BaseDB.AddToLog("UserName: " + userStruct.userName + " User Id: " + userStruct.userId + " BOtId: " + userStruct.botId + " BotName: " + userStruct.botName + " url: " + userStruct.ServiceUrl);
                                 BaseDB.AddUser(userStruct.userName, userStruct.userId, userStruct.botName, userStruct.botId, userStruct.ServiceUrl, 1);
 
                                 Parameters.Parameters.listaAdresow.Add(userStruct);
@@ -3017,6 +3035,7 @@ namespace GksKatowiceBot
                     }
                 }
 
+
                 else
                 {
                     HandleSystemMessage(activity);
@@ -3030,14 +3049,14 @@ namespace GksKatowiceBot
             return response;
         }
 
-        public async static void CreateMessage(IList<Attachment> foto, string wiadomosc, string fromId)
+        public static void CreateMessage(IList<Attachment> foto, string wiadomosc, string fromId)
         {
             try
             {
                 BaseDB.AddToLog("Wywołanie metody CreateMessage");
 
                 string uzytkownik = "";
-                DataTable dt = BaseGETMethod.GetUser(1);
+                DataTable dt = BaseGETMethod.GetUser(0);
 
                 try
                 {
@@ -3078,8 +3097,14 @@ namespace GksKatowiceBot
                     {
                         string filename = foto[0].ContentUrl.Substring(foto[0].ContentUrl.Length - 4, 3).Replace(".", "");
 
-                        if (foto[0].ContentType.Contains("image")) foto[0].ContentUrl = "http://serwer1606926.home.pl/pub/" + filename + ".png";//since the baseaddress
-                        else if (foto[0].ContentType.Contains("video")) foto[0].ContentUrl = "http://serwer1606926.home.pl/pub/" + filename + ".mp4";
+                        if (foto[0].ContentType.Contains("image"))
+                        {
+                            foto[0].ContentUrl = "http://serwer1606926.home.pl/pub/" + filename + ".png";//since the baseaddress
+                        }
+                        else if (foto[0].ContentType.Contains("video"))
+                        {
+                            foto[0].ContentUrl = "http://serwer1606926.home.pl/pub/" + filename + ".mp4";
+                        }
 
                         //foto[0].ContentUrl = "http://serwer1606926.home.pl/pub/" + filename + ".png";
 
@@ -3122,11 +3147,11 @@ namespace GksKatowiceBot
 
 
 
-        public async static void CreateMessagePowiadomienia(string fromId)
+        public static void CreateMessagePowiadomienia(string fromId)
         {
             try
             {
-                BaseDB.AddToLog("Wywołanie metody CreateMessage");
+                BaseDB.AddToLog("Wywołanie metody CreateMessagePowiadomienia");
 
                 string uzytkownik = "";
                 DataTable dt = BaseGETMethod.GetUser(4);
@@ -3175,7 +3200,7 @@ namespace GksKatowiceBot
                     message.AttachmentLayout = null;
 
 
-                        message.Attachments = BaseGETMethod.GetCardsAttachmentsFotoPowiadomienia();
+                    message.Attachments = BaseGETMethod.GetCardsAttachmentsFotoPowiadomienia();
 
                     int i = 0;
                     while (i <= dt.Rows.Count)
@@ -3215,7 +3240,7 @@ namespace GksKatowiceBot
                         message.Conversation = new ConversationAccount(id: conversationId.Id, isGroup: false);
                         //await connector.Conversations.SendToConversationAsync((Activity)message).ConfigureAwait(false);
 
-                        var returne = await connector.Conversations.SendToConversationAsync((Activity)message);
+                        await connector.Conversations.SendToConversationAsync((Activity)message).ConfigureAwait(false);
                     }
                 }
                 catch (Exception ex)
@@ -3251,8 +3276,8 @@ namespace GksKatowiceBot
         {
             if (message.Type == ActivityTypes.DeleteUserData)
             {
-                BaseDB.ChangeNotification(message.From.Id,5);
-                BaseDB.AddToLog("DeleteUserData");
+                BaseDB.ChangeNotification(message.From.Id, 5);
+              //  BaseDB.AddToLog("DeleteUserData");
             }
             else
                 if (message.Type == ActivityTypes.ConversationUpdate)
@@ -3261,7 +3286,7 @@ namespace GksKatowiceBot
             else
                     if (message.Type == ActivityTypes.ContactRelationUpdate)
             {
-                BaseDB.AddToLog("ContactRelationUpdate");
+                //BaseDB.AddToLog("ContactRelationUpdate");
             }
             else
                         if (message.Type == ActivityTypes.Typing)
